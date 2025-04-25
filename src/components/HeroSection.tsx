@@ -24,7 +24,7 @@ const HeroSection: React.FC = () => {
                                 <p>
                                     Streamline daily operations with our all-in-one platform for residential societies—automated billing, visitor tracking, complaint resolution, and more.
                                 </p>
-                                <a href="/product#society" className="custom-btn">
+                                <a href="/product" className="custom-btn">
                                     Discover More
                                 </a>
                             </div>
