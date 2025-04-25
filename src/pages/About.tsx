@@ -18,12 +18,12 @@ const AboutPage = () => {
 
                 <div className="row g-4">
                     {[
-                        { name: "Arya Sharma", role: "Product Designer", img: "/testimonial/profile2.jpg" },
-                        { name: "Karan Mehta", role: "Full Stack Engineer", img: "/testimonial/profile1.jpg" },
-                        { name: "Riya Kapoor", role: "AI Specialist", img: "/testimonial/profile2.jpg" },
-                        { name: "Mira Verma", role: "UX Researcher", img: "/testimonial/profile1.jpg" },
-                        { name: "Rahul Jain", role: "DevOps Engineer", img: "/testimonial/profile2.jpg" },
-                        { name: "Sneha Das", role: "Frontend Developer", img: "/testimonial/profile2.jpg" },
+                        { name: "Sibasis Sahu", role: "Managing Director", img: "/team/SibasisSir.png" },
+                        { name: "Binoy Acharya", role: "Full Stack Engineer", img: "/team/BinoyAcharyaSir.png" },
+                        { name: "Birendra Pradhan", role: "Managing Director", img: "/team/BirenSir.png" },
+                        // { name: "Mira Verma", role: "UX Researcher", img: "/testimonial/profile1.jpg" },
+                        // { name: "Rahul Jain", role: "DevOps Engineer", img: "/testimonial/profile2.jpg" },
+                        // { name: "Sneha Das", role: "Frontend Developer", img: "/testimonial/profile2.jpg" },
                     ].map((member, idx) => (
                         <div className="col-sm-12 col-md-6 col-lg-4" key={idx} data-aos="zoom-in" data-aos-delay={idx * 100}>
                             <div className="card border-0 shadow text-center h-100">
@@ -31,7 +31,10 @@ const AboutPage = () => {
                                     src={member.img}
                                     className="card-img-top rounded-top object-fit-cover"
                                     alt={member.name}
-                                    style={{ height: "300px", objectFit: "cover" }}
+                                    style={{
+                                        height: "300px",
+                                        objectFit: idx < 3 ? "contain" : "cover",  // Apply "contain" to the first 3 images, else "cover"
+                                    }}
                                 />
                                 <div className="card-body">
                                     <h5 className="fw-bold">{member.name}</h5>
@@ -41,6 +44,7 @@ const AboutPage = () => {
                         </div>
                     ))}
                 </div>
+
             </section>
 
 
@@ -103,8 +107,8 @@ const AboutPage = () => {
                             <div className="card-body">
                                 <h4 className="fw-bold text-center">Vision for the Future</h4>
                                 <p className="text-muted text-center">
-                                    
-                                Our journey has just begun. With innovation as our compass, we aim to expand into new verticals and reimagine digital interactions across industries.
+
+                                    Our journey has just begun. With innovation as our compass, we aim to expand into new verticals and reimagine digital interactions across industries.
                                 </p>
                             </div>
                         </div>

@@ -32,11 +32,11 @@ const Product = () => {
                   Built for residents, managers, and security staff, it ensures seamless operations and communication within gated communities.
                 </p>
                 <ul className="text-muted">
-                  <li>🔒 Secure Visitor & Delivery Management</li>
-                  <li>📢 Notice Board, Complaint Management, & Helpdesk</li>
-                  <li>💡 Utility Bill Tracking & Automated Payments</li>
-                  <li>📅 Amenity Booking (Clubhouse, Gym, etc.)</li>
-                  <li>📊 Monthly Reports & Community Dashboard</li>
+                  <li> Secure Visitor & Delivery Management</li>
+                  <li> Notice Board, Complaint Management, & Helpdesk</li>
+                  <li> Utility Bill Tracking & Automated Payments</li>
+                  <li> Amenity Booking (Clubhouse, Gym, etc.)</li>
+                  <li> Monthly Reports & Community Dashboard</li>
                 </ul>
                 <div className="mt-3 d-flex flex-wrap align-items-center gap-3">
                   <a href="https://play.google.com/" target="_blank" rel="noreferrer">
@@ -75,11 +75,11 @@ const Product = () => {
                   Whether you're a contractor, builder, or an individual, get access to the right tools, on demand.
                 </p>
                 <ul className="text-muted">
-                  <li>🚜 Real-Time Excavator Booking</li>
-                  <li>📍 GPS Tracking & Route Optimization</li>
-                  <li>💼 Verified Operators & Service Records</li>
-                  <li>🧾 Transparent Pricing & Invoice System</li>
-                  <li>📞 24/7 Customer Support & Assistance</li>
+                  <li> Real-Time Excavator Booking</li>
+                  <li> GPS Tracking & Route Optimization</li>
+                  <li> Verified Operators & Service Records</li>
+                  <li> Transparent Pricing & Invoice System</li>
+                  <li> 24/7 Customer Support & Assistance</li>
                 </ul>
                 <div className="mt-3 d-flex flex-wrap align-items-center gap-3">
                   <a href="https://play.google.com/" target="_blank" rel="noreferrer">
