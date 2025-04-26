@@ -4,26 +4,32 @@ import '../styles/main.css';
 
 const HeroSection: React.FC = () => {
     return (
-        <section id="hero" className="hero custom-hero-section">
-            <div
-                id="hero-carousel"
-                className="carousel custom-carousel slide carousel-fade"
-                data-bs-ride="carousel"
-                data-bs-interval="2800"
-            >
-                <div className="carousel-inner">
-                    <div className="carousel-item active">
-                        <img src="/custom-images/custom1.jpg" alt="Smart Society Management" />
-                        <div className="custom-container">
-                            <h2>Smart Society Management</h2>
-                            <p>
-                                Streamline daily operations with our all-in-one platform for residential societies—automated billing, visitor tracking, complaint resolution, and more.
-                            </p>
-                            <Link to="/product" className="custom-btn">
-                                Discover More
-                            </Link>
+        <>
+            {/* Preload carousel images */}
+            <link rel="preload" href="/custom-images/custom1.jpg" as="image" />
+            <link rel="preload" href="/custom-images/custom2.jpg" as="image" />
+            <link rel="preload" href="/custom-images/custom3.jpg" as="image" />
+
+            <section id="hero" className="hero custom-hero-section">
+                <div
+                    id="hero-carousel"
+                    className="carousel custom-carousel slide carousel-fade"
+                    data-bs-ride="carousel"
+                    data-bs-interval="2800"
+                >
+                    <div className="carousel-inner">
+                        <div className="carousel-item active">
+                            <img src="/custom-images/custom1.jpg" alt="Smart Society Management" />
+                            <div className="custom-container">
+                                <h2>Smart Society Management</h2>
+                                <p>
+                                    Streamline daily operations with our all-in-one platform for residential societies—automated billing, visitor tracking, complaint resolution, and more.
+                                </p>
+                                <a href="/product" className="custom-btn">
+                                    Discover More
+                                </a>
+                            </div>
                         </div>
-                    </div>
 
                     <div className="carousel-item">
                         <img src="/custom-images/custom2.jpg" alt="Excavator Rental Services" />
