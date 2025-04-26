@@ -31,40 +31,41 @@ const HeroSection: React.FC = () => {
                             </div>
                         </div>
 
-                    <div className="carousel-item">
-                        <img src="/custom-images/custom2.jpg" alt="Excavator Rental Services" />
-                        <div className="custom-container">
-                            <h2>Excavator Rental Made Easy</h2>
-                            <p>
-                                Our excavator service platform connects contractors with reliable, on-demand machinery—saving time, reducing hassle, and increasing productivity.
-                            </p>
-                            <Link to="/product" className="custom-btn">
-                                Learn More
-                            </Link>
+                        <div className="carousel-item">
+                            <img src="/custom-images/custom2.jpg" alt="Excavator Rental Services" />
+                            <div className="custom-container">
+                                <h2>Excavator Rental Made Easy</h2>
+                                <p>
+                                    Our excavator service platform connects contractors with reliable, on-demand machinery—saving time, reducing hassle, and increasing productivity.
+                                </p>
+                                <Link to="/product" className="custom-btn">
+                                    Learn More
+                                </Link>
+                            </div>
+                        </div>
+
+                        <div className="carousel-item">
+                            <img src="/custom-images/custom3.jpg" alt="Innovating for the Future" />
+                            <div className="custom-container">
+                                <h2>Innovating for Tomorrow</h2>
+                                <p>
+                                    At Chaturdha, we're building smart, scalable digital solutions that simplify lives and empower industries. Your growth is our mission.
+                                </p>
+                                <Link to="/about" className="custom-btn">
+                                    About Us
+                                </Link>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="carousel-item">
-                        <img src="/custom-images/custom3.jpg" alt="Innovating for the Future" />
-                        <div className="custom-container">
-                            <h2>Innovating for Tomorrow</h2>
-                            <p>
-                                At Chaturdha, we're building smart, scalable digital solutions that simplify lives and empower industries. Your growth is our mission.
-                            </p>
-                            <Link to="/about" className="custom-btn">
-                                About Us
-                            </Link>
-                        </div>
-                    </div>
+                    <ul className="carousel-indicators">
+                        <li data-bs-target="#hero-carousel" data-bs-slide-to="0" className="active"></li>
+                        <li data-bs-target="#hero-carousel" data-bs-slide-to="1"></li>
+                        <li data-bs-target="#hero-carousel" data-bs-slide-to="2"></li>
+                    </ul>
                 </div>
-
-                <ul className="carousel-indicators">
-                    <li data-bs-target="#hero-carousel" data-bs-slide-to="0" className="active"></li>
-                    <li data-bs-target="#hero-carousel" data-bs-slide-to="1"></li>
-                    <li data-bs-target="#hero-carousel" data-bs-slide-to="2"></li>
-                </ul>
-            </div>
-        </section>
+            </section>
+        </>
     );
 };
 
