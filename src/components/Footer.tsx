@@ -9,9 +9,9 @@ const Footer: React.FC = () => {
         <Row className="gy-4">
           {/* About Section */}
           <Col lg={4} md={6} className="footer-about">
-            <a href="/" className="logo d-flex align-items-center text-white text-decoration-none">
+            <Link to="/" className="logo d-flex align-items-center text-white text-decoration-none">
               <span className="sitename">Chaturdha Projects & Services Pvt Ltd</span>
-            </a>
+            </Link>
             <div className="footer-contact pt-3">
               <p>Block - N5/123, 3rd floor, Radhamani Building, Jaydev Vihar Rd (Near Biju Pattnaik College)</p>
               <p>Bhubaneswar, Odisha 751013</p>
@@ -34,11 +34,11 @@ const Footer: React.FC = () => {
           <Col lg={2} md={3} className="footer-links">
             <h4>Quick Links</h4>
             <ul className="list-unstyled">
-              <li><a href="/">Home</a></li>
-              <li><a href="/about">Who We Are</a></li>
-              <li><a href="/product">Products</a></li>
-              <li><a href="/contact">Support</a></li>
-              <li><a href="/terms">Legal</a></li>
+              <li><Link to="/">Home</Link></li>
+              <li><Link to="/about">Who We Are</Link></li>
+              <li><Link to="/product">Products</Link></li>
+              <li><Link to="/contact">Support</Link></li>
+              <li><Link to="/terms">Legal</Link></li>
             </ul>
           </Col>
 
@@ -46,12 +46,10 @@ const Footer: React.FC = () => {
           <Col lg={2} md={3} className="footer-links">
             <h4>Download Links</h4>
             <ul className="list-unstyled">
-              <li><a href="https://play.google.com/store/apps/details?id=com.bhawancare.bhawancare">BhawanCare PlayStore</a></li>
-              <li><a href="/coming-soon">Excavator PlayStore</a></li>
-              <li><a href="https://apps.apple.com/app/idYOUR_APPLE_ID">BhawanCare AppStore</a></li>
-              <li><a href="/coming-soon">Excavator AppStore</a></li>
-              {/* <li><a href="https://bhawancare.com/">Bhawan Care Web</a></li>
-              <li><a href="https://excavatorapp.com/">Excavator Web</a></li> */}
+              <li><a href="https://play.google.com/store/apps/details?id=com.bhawancare.bhawancare" target="_blank" rel="noreferrer">BhawanCare PlayStore</a></li>
+              <li><Link to="/coming-soon">Excavator PlayStore</Link></li>
+              <li><a href="https://apps.apple.com/app/idYOUR_APPLE_ID" target="_blank" rel="noreferrer">BhawanCare AppStore</a></li>
+              <li><Link to="/coming-soon">Excavator AppStore</Link></li>
             </ul>
           </Col>
 
@@ -65,7 +63,6 @@ const Footer: React.FC = () => {
               </Button>
             </Link>
 
-            {/* Visit Buttons in a Row */}
             <div className="d-flex gap-2 flex-wrap mt-3">
               <a
                 href="https://bhawancare.com/"
@@ -88,13 +85,12 @@ const Footer: React.FC = () => {
         </Row>
       </Container>
 
-      {/* Copyright */}
       <Container className="text-center mt-4">
         <p className="copyright">
           &copy; {new Date().getFullYear()} <strong className="site">Chaturdha Projects & Services Pvt Ltd</strong>. All rights reserved.
         </p>
         <p className="credits">
-          Crafted with❤️by CPS
+          Crafted with ❤️ by CPS
         </p>
       </Container>
     </footer>
