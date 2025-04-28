@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
           {/* About Section */}
           <Col lg={4} md={6} className="footer-about">
             <a href="/" className="logo d-flex align-items-center text-white text-decoration-none">
-              <span className="sitename">Chaturdha Projects & Services Pvt Ltd</span>
+              <span className="sitename">CPS Pvt Ltd</span>
             </a>
             <div className="footer-contact pt-3">
               <p>Block - N5/123, 3rd floor, Radhamani Building, Jaydev Vihar Rd (Near Biju Pattnaik College)</p>

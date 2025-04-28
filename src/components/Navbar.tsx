@@ -22,8 +22,8 @@ const Header: React.FC = () => {
                 style={{ objectFit: 'contain' }}
               />
               <div className="d-flex flex-column justify-content-center">
-                <h1 className="sitename m-0  fw-bold">Chaturdha Projects &</h1>
-                <h2 className="sitename-sub m-0 fw-semibold">Services Pvt Ltd<span className="text-primary">.</span></h2>
+                <h1 className="sitename m-0  fw-bold">CPS Pvt Ltd</h1>
+                <h2 className="sitename-sub m-0 fw-semibold"> <span className="text-primary">.</span></h2>
               </div>
             </Navbar.Brand>
 

@@ -20,7 +20,7 @@ const AboutPage = () => {
                     {[
                         { name: "Sibasis Sahu", role: "Managing Director", img: "/team/SibasisSir.png" },
                         { name: "Binoy Acharya", role: "Full Stack Engineer", img: "/team/BinoyAcharyaSir.png" },
-                        { name: "Birendra Pradhan", role: "Managing Director", img: "/team/BirenSir.png" },
+                        { name: "Biren Pradhan", role: "Managing Director", img: "/team/BirenSir.png" },
                         // { name: "Mira Verma", role: "UX Researcher", img: "/testimonial/profile1.jpg" },
                         // { name: "Rahul Jain", role: "DevOps Engineer", img: "/testimonial/profile2.jpg" },
                         // { name: "Sneha Das", role: "Frontend Developer", img: "/testimonial/profile2.jpg" },
