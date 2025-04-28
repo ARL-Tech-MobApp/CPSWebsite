@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
           {/* About Section */}
           <Col lg={4} md={6} className="footer-about">
             <Link to="/" className="logo d-flex align-items-center text-white text-decoration-none">
-              <h1 className="site-name m-0  fw-bold">CPS Pvt Ltd.</h1>
+              <h1 className="site-name m-0  fw-bold">CPS Pvt Ltd</h1>
             </Link>
             <div className="footer-contact pt-3">
               <p>Block - N5/123, 3rd floor, Radhamani Building, Jaydev Vihar Rd (Near Biju Pattnaik College)</p>
@@ -90,7 +90,7 @@ const Footer: React.FC = () => {
           &copy; {new Date().getFullYear()} <strong className="site">Chaturdha Projects & Services Pvt Ltd</strong>. All rights reserved.
         </p>
         <p className="credits">
-          Crafted with ❤️ by CPS
+          Designed by CPS Team
         </p>
       </Container>
     </footer>

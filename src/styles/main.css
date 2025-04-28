@@ -301,7 +301,11 @@ html, body {
 }
 
 .site-name {
-  color: '#fff';
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  color: #ffffff;
 }
 
 .footer .newsletter-form input[type="email"]:focus {
