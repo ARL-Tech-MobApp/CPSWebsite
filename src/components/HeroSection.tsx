@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/main.css';
 
 const HeroSection: React.FC = () => {
@@ -37,9 +38,9 @@ const HeroSection: React.FC = () => {
                                 <p>
                                     Our excavator service platform connects contractors with reliable, on-demand machinery—saving time, reducing hassle, and increasing productivity.
                                 </p>
-                                <a href="/product#excavator" className="custom-btn">
+                                <Link to="/product" className="custom-btn">
                                     Learn More
-                                </a>
+                                </Link>
                             </div>
                         </div>
 
@@ -50,9 +51,9 @@ const HeroSection: React.FC = () => {
                                 <p>
                                     At Chaturdha, we're building smart, scalable digital solutions that simplify lives and empower industries. Your growth is our mission.
                                 </p>
-                                <a href="/about" className="custom-btn">
+                                <Link to="/about" className="custom-btn">
                                     About Us
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>

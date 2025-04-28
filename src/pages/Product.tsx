@@ -2,6 +2,7 @@ import React from "react";
 import "../styles/main.css";
 import Header from "../components/Navbar";
 import Footer from "../components/Footer";
+import { Link } from "react-router-dom";
 
 const Product = () => {
   return (
@@ -110,6 +111,9 @@ const Product = () => {
               Whether it’s managing a society or getting the right equipment at the right time, our products are designed to solve real-world problems
               with simplicity and elegance.
             </p>
+            <Link to="/contact" className="btn btn-primary mt-3">
+              Contact Us to Learn More
+            </Link>
           </div>
         </div>
       </section>
