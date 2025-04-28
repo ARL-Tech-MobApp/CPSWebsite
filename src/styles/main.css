@@ -23,14 +23,14 @@ html, body {
   font-size: 2rem;
   font-weight: bold;
   letter-spacing: 0.5px;
-  color: #041629;
+  color: #000000;
 }
 
 .sitename-sub {
   font-family: "Inter", sans-serif;
   font-weight: 500;
   font-size: 1.1rem;
-  color: #474444;
+  color: #000000;
 }
 
 /* Desktop navbar custom styling */
@@ -300,6 +300,10 @@ html, body {
   padding: 4px;
 }
 
+.site-name {
+  color: '#fff';
+}
+
 .footer .newsletter-form input[type="email"]:focus {
   outline: none;
 }
@@ -516,7 +520,7 @@ html, body {
 }
 
 .phone-image {
-  max-width: 320px;
+  max-width: 400px;
   z-index: 1;
   position: relative;
 }

@@ -116,7 +116,7 @@ const AboutPage = () => {
                 </div>
 
                 <div className="text-center mt-5" data-aos="zoom-in">
-                    <img src="custom-images/custom2.jpg" alt="Our Journey" className="img-fluid mb-4 rounded-circle shadow" style={{ width: '120px', height: '120px' }} />
+                    <img src="/about/growth.jpg" alt="Our Journey" className="img-fluid mb-4 rounded-circle shadow" style={{ width: '120px', height: '120px' }} />
                     <h5 className="fw-semibold mb-3">Let’s Simplify the Future.....</h5>
                     <p className="text-muted">We’re building not just products—but experiences. Join us as we continue to blend utility, creativity, and compassion in everything we create.</p>
                 </div>
