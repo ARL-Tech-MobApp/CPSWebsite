@@ -30,15 +30,18 @@ const Contact = () => {
                   <p><strong> Email:</strong> <a href="mailto:support@chaturdhaprojectsandservices.com" className="text-decoration-none text-dark">support@chaturdhaprojectsandservices.com</a></p>
                 </div>
                 <div className="map mt-4 rounded-4 overflow-hidden shadow-sm">
-                  <iframe
-                    title="Google Maps"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d29936.728647172793!2d85.81939199151213!3d20.296496790471966!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xa7179b42d447001%3A0x10f23dd3631dae7e!2sBhawan%20Care!5e0!3m2!1sen!2sin!4v1745494386849!5m2!1sen!2sin"
-                    width="100%"
-                    height={300}
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                  ></iframe>
+                  {process.env.NODE_ENV === 'production' && (
+                    <iframe
+                      title="Google Maps"
+                      src="..."
+                      width="100%"
+                      height={300}
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                    ></iframe>
+                  )}
+
                 </div>
               </div>
             </div>
