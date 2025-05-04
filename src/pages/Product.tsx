@@ -20,7 +20,7 @@ const Product = () => {
           <div className="row align-items-center mb-5 product-item" data-aos="fade-right">
             <div className="col-lg-6">
               <img
-                src="/download/phone1.png"
+                src="/download/1.png"
                 alt="Bhawan Care App"
                 className="img-fluid shadow rounded-4 floating"
               />
@@ -63,7 +63,7 @@ const Product = () => {
           <div className="row align-items-center flex-lg-row-reverse mb-5 product-item" data-aos="fade-left">
             <div className="col-lg-6">
               <img
-                src="/download/phone1.png"
+                src="/download/2.png"
                 alt="Excavator App"
                 className="img-fluid shadow rounded-4 floating"
               />

@@ -32,7 +32,7 @@ const Download = () => {
                     </div>
                     <div className="col-lg-6 text-center">
                         <img
-                            src="/download/phone1.png"
+                            src="/download/1.png"
                             alt="Main App Install"
                             className="img-fluid phone-image"
                         />
@@ -68,7 +68,7 @@ const Download = () => {
                     </div>
                     <div className="col-lg-6 text-center">
                         <img
-                            src="/download/phone1.png"
+                            src="/download/2.png"
                             alt="Companion App Install"
                             className="img-fluid phone-image"
                         />
