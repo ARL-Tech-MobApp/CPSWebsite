@@ -31,6 +31,7 @@ type FormControlElement =
   | HTMLSelectElement
   | HTMLTextAreaElement;
 const EmployeeManagement: React.FC = () => {
+  const [isUploading, setIsUploading] = useState(false);
   const { addEmployee } = useEmployeeStore();
   const [showModal, setShowModal] = useState(false);
   const [formStep, setFormStep] = useState<number>(1);
@@ -61,6 +62,7 @@ const EmployeeManagement: React.FC = () => {
     if (formStep < 3) {
       setFormStep((prev) => prev + 1);
     } else {
+      setIsUploading(true);
       try {
         await addEmployee({
           fullName: formData.fullName,
@@ -84,8 +86,10 @@ const EmployeeManagement: React.FC = () => {
           joiningDate: new Date().toISOString().split("T")[0],
         });
         setFormStep(1);
+        setIsUploading(false);
         setShowModal(false);
       } catch (error) {
+        setIsUploading(false);
         console.error("❌ Failed to submit data:", error);
         alert("There was an error submitting the form. Please try again.");
       }
@@ -319,58 +323,30 @@ const EmployeeManagement: React.FC = () => {
                   <ArrowLeftIcon /> Back
                 </Button>
               )}
-              <Button
+                <Button
                 variant={formStep === 3 ? "success" : "primary"}
                 type="submit"
-              >
+                disabled={isUploading}
+                >
                 {formStep === 3 ? (
                   <>
-                    <CheckIcon /> Submit
+                  <CheckIcon /> Submit{" "}
+                  {isUploading && (
+                    <span
+                    className="spinner-border spinner-border-sm ms-2"
+                    role="status"
+                    aria-hidden="true"
+                    ></span>
+                  )}
                   </>
                 ) : (
                   "Next"
                 )}
-              </Button>
+                </Button>
             </div>
           </Form>
         </Modal.Body>
       </Modal>
-
-      {/* Display submitted data */}
-      {/* {submittedData.length > 0 && (
-        <div className="mt-4">
-          <h4>Employee Records</h4>
-          <Row>
-            {submittedData.map((employee, index) => (
-              <Col key={index} md={6} lg={4} className="mb-3">
-                <Card>
-                  <Card.Header>
-                    <Card.Title>{employee.fullName}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">
-                      {employee.position}
-                    </Card.Subtitle>
-                  </Card.Header>
-                  <Card.Body>
-                    <Card.Text>
-                      <strong>Department:</strong> {employee.department}
-                      <br />
-                      <strong>Email:</strong> {employee.email}
-                      <br />
-                      {employee.phone && (
-                        <>
-                          <strong>Phone:</strong> {employee.phone}
-                          <br />
-                        </>
-                      )}
-                      <strong>Joined:</strong> {employee.joiningDate}
-                    </Card.Text>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </div>
-      )} */}
     </>
   );
 };

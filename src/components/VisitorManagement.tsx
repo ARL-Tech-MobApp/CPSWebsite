@@ -42,6 +42,7 @@ interface VisitorFormData {
 }
 
 const VisitorManagement: React.FC = () => {
+  const [showUploadProgress, setShowUploadProgress] = useState(false);
   const { fetchSurveys, addSurvey, surveyloading } = useSurveyStore();
   const { userProfile, profileLoading } = useAuthStore();
   const [showModal, setShowModal] = useState(false);
@@ -107,21 +108,21 @@ const VisitorManagement: React.FC = () => {
       setFormStep((prev) => prev + 1);
       return;
     }
-
+    setShowUploadProgress(true);
     try {
       // Prepare survey data without the file
       const surveyData = {
-        employeeId: userProfile?.id || "unknown",
-        serviceType: formData.visitorType.join(",") || "unknown",
-        description: formData.description,
-        vendorName: formData.vendorName || "unknown",
-        ownerName: formData.ownerName,
-        contact1: formData.contact1,
-        contact2: formData.contact2,
-        address: formData.address,
-        pincode: formData.pincode,
-        constructionMaterials: formData.constructionMaterials?.join(","),
-        shopStatus: formData.shopStatus,
+        employeeId: userProfile?.id || "None",
+        serviceType: formData.visitorType.join(",") || "None",
+        description: formData.description|| "None",
+        vendorName: formData.vendorName || "None",
+        ownerName: formData.ownerName || "None",
+        contact1: formData.contact1 || "None",
+        contact2: formData.contact2 || "None",
+        address: formData.address || "None",
+        pincode: formData.pincode || "None",
+        constructionMaterials: formData.constructionMaterials?.join(",")|| "None",
+        shopStatus: formData.shopStatus || "None",
         visitingCardFileName: formData.visitingCard?.name || undefined,
       };
 
@@ -170,6 +171,7 @@ const VisitorManagement: React.FC = () => {
         constructionMaterials: [],
       });
       setFormStep(1);
+      setShowUploadProgress(false);
       setShowModal(false);
       // setUploadProgress(0);
 
@@ -190,6 +192,7 @@ const VisitorManagement: React.FC = () => {
         }, 3000); // Remove alert after 3 seconds
       }, 0);
     } catch (error) {
+      setShowUploadProgress(false);
       console.error("Submission error:", error);
       const errorMessage =
         (error as any)?.response?.data?.message ||
@@ -205,6 +208,7 @@ const VisitorManagement: React.FC = () => {
         document.body.removeChild(alertContainer);
       }, 3000); // Remove alert after 3 seconds
     } finally {
+      setShowUploadProgress(false);
       // setIsSubmitting(false);
     }
   };
@@ -587,8 +591,20 @@ const VisitorManagement: React.FC = () => {
                   <ArrowLeftIcon /> Back
                 </Button>
               )}
-              <Button variant="primary" type="submit" className="ml-2">
+              <Button
+                variant="primary"
+                type="submit"
+                className={"ml-2"}
+                disabled={showUploadProgress}
+              >
                 {formStep === 3 ? "Submit" : "Next"}
+                {showUploadProgress && (
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                )}
               </Button>
             </div>
           </Form>

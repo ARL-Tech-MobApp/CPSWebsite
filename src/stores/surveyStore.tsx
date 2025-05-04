@@ -16,7 +16,13 @@ export type Survey = {
   address?: string;
   pincode?: string;
   shopType?: string;
-  visitingCardUrl?: ReactNode | ReactElement | JSX.Element | undefined | string;
+  visitingCardUrl?:
+    | ReactNode
+    | ReactElement
+    | JSX.Element
+    | undefined
+    | string
+    | HTMLImageElement;
   createdAt?: string;
 };
 

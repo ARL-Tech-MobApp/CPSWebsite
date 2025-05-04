@@ -7,6 +7,7 @@ interface UserProfile {
   position: string;
   department: string;
   mustChangePassword: boolean;
+  isAdmin: string;
 }
 
 interface AuthState {

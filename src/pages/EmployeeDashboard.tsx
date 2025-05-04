@@ -39,16 +39,15 @@ function EmployeeDashboard() {
   }
 
   type Employee = {
-    id: number;
     fullName: string;
     dob: string;
     position: string;
     department: string;
     email: string;
-    phonenumber: string;
-    address: string;
-    joiningdate: string;
-    salary: string;
+    // phonenumber: string;
+    // address: string;
+    // joiningdate: string;
+    // salary: string;
   };
 
   const { employees, fetchEmployees } = useEmployeeStore();
@@ -82,35 +81,53 @@ function EmployeeDashboard() {
     { key: "pincode", title: "Pincode" },
     { key: "address", title: "Address" },
   ];
-
-  const surveyData = userProfile?.isAdmin ==="true" ?surveys?.map((suvey) => ({
-    employeeId: suvey?.employeeId,
-    ownerName: suvey?.ownerName,
-    serviceType: suvey?.serviceType,
-    materialName: suvey?.materialName,
-    description: suvey?.description,
-    contact1: suvey?.contact1,
-    contact2: suvey?.contact2,
-    visitingCardUrl: (
-      <img src={suvey?.visitingCardUrl} alt="" width={100} height={100} />
-    ),
-    pincode: suvey?.pincode,
-    address: suvey?.address,
-  }))
-  : surveys?.filter((item,index)=>item?.employeeId===userProfile?.id)?.map((suvey) => ({
-    employeeId: suvey?.employeeId,
-    ownerName: suvey?.ownerName,
-    serviceType: suvey?.serviceType,
-    materialName: suvey?.materialName,
-    description: suvey?.description,
-    contact1: suvey?.contact1,
-    contact2: suvey?.contact2,
-    visitingCardUrl: (
-      <img src={suvey?.visitingCardUrl} alt="" width={100} height={100} />
-    ),
-    pincode: suvey?.pincode,
-    address: suvey?.address,
-  }));
+  console.log("surveys", surveys);
+  const surveyData =
+    userProfile?.isAdmin === "true"
+      ? surveys?.map((suvey) => ({
+          employeeId: suvey?.employeeId ?? "None",
+          ownerName: suvey?.ownerName ?? "None",
+          serviceType: suvey?.serviceType ?? "None",
+          materialName: suvey?.materialName ?? "None",
+          description: suvey?.description ?? "None",
+          contact1: suvey?.contact1 ?? "None",
+          contact2: suvey?.contact2 ?? "None",
+          visitingCardUrl: suvey?.visitingCardUrl ? (
+            <img
+              src={String(suvey?.visitingCardUrl)}
+              alt=""
+              width={100}
+              height={100}
+            />
+          ) : (
+            <p>None</p>
+          ),
+          pincode: suvey?.pincode ?? "None",
+          address: suvey?.address ?? "None",
+        }))
+      : surveys
+          ?.filter((item, index) => item?.employeeId === userProfile?.id)
+          ?.map((suvey) => ({
+            employeeId: suvey?.employeeId ?? "None",
+            ownerName: suvey?.ownerName ?? "None",
+            serviceType: suvey?.serviceType ?? "None",
+            materialName: suvey?.materialName ?? "None",
+            description: suvey?.description ?? "None",
+            contact1: suvey?.contact1 ?? "None",
+            contact2: suvey?.contact2 ?? "None",
+            visitingCardUrl: suvey?.visitingCardUrl ? (
+              <img
+                src={String(suvey?.visitingCardUrl)}
+                alt=""
+                width={100}
+                height={100}
+              />
+            ) : (
+              <p>None</p>
+            ),
+            pincode: suvey?.pincode ?? "None",
+            address: suvey?.address ?? "None",
+          }));
   const employeeData = employees?.map((emp) => ({
     fullName: emp?.fullName,
     dob: emp?.dob,
@@ -119,49 +136,49 @@ function EmployeeDashboard() {
     department: emp?.department,
   }));
 
-  console.log('userProfile?.isAdmin',userProfile)
+  console.log("userProfile?.isAdmin", userProfile);
 
   return (
     <div>
       <Header />
       <div className="container my-5">
-        {userProfile?.isAdmin === "true" ? (
-          <>
-            <nav className="my-3">
-              <div className="nav nav-tabs" id="nav-tab" role="tablist">
-                <button
-                  className="nav-link active"
-                  id="nav-home-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#nav-home"
-                  type="button"
-                  role="tab"
-                  aria-controls="nav-home"
-                  aria-selected="true"
-                >
-                  Employee Details
-                </button>
-                <button
-                  className="nav-link"
-                  id="nav-profile-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#nav-profile"
-                  type="button"
-                  role="tab"
-                  aria-controls="nav-profile"
-                  aria-selected="false"
-                >
-                  Survey Details
-                </button>
-              </div>
-            </nav>
-            <div className="tab-content" id="nav-tabContent">
-              <div
-                className="tab-pane fade show active"
-                id="nav-home"
-                role="tabpanel"
-                aria-labelledby="nav-home-tab"
-              >
+        <nav className="my-3">
+          <div className="nav nav-tabs" id="nav-tab" role="tablist">
+            <button
+              className="nav-link active"
+              id="nav-home-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#nav-home"
+              type="button"
+              role="tab"
+              aria-controls="nav-home"
+              aria-selected="true"
+            >
+              Employee Details
+            </button>
+            <button
+              className="nav-link"
+              id="nav-profile-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#nav-profile"
+              type="button"
+              role="tab"
+              aria-controls="nav-profile"
+              aria-selected="false"
+            >
+              Survey Details
+            </button>
+          </div>
+        </nav>
+        <div className="tab-content" id="nav-tabContent">
+          <div
+            className="tab-pane fade show active"
+            id="nav-home"
+            role="tabpanel"
+            aria-labelledby="nav-home-tab"
+          >
+            {userProfile?.isAdmin === "true" ? (
+              <>
                 <EmployeeManagement />
                 <GenericTable
                   columns={userColumns}
@@ -169,31 +186,31 @@ function EmployeeDashboard() {
                   rowsPerPage={5}
                   themeColor="#007bff"
                   onSelectionChange={() => {}}
-                  idKey="id"
                   data={employeeData}
                 />
-              </div>
-              <div
-                className="tab-pane fade"
-                id="nav-profile"
-                role="tabpanel"
-                aria-labelledby="nav-profile-tab"
-              >
-                <VisitorManagement />
-                <GenericTable
-                  columns={surveyColumns}
-                  heading="Survey Details"
-                  rowsPerPage={5}
-                  themeColor="#007bff"
-                  onSelectionChange={() => {}}
-                  data={surveyData}
-                />
-              </div>
-            </div>
-          </>
-        ) : (
-          <p>You don't have access to this tab</p>
-        )}
+              </>
+            ) : (
+              <p>You don't have Access To This Section</p>
+            )}
+          </div>
+
+          <div
+            className="tab-pane fade"
+            id="nav-profile"
+            role="tabpanel"
+            aria-labelledby="nav-profile-tab"
+          >
+            <VisitorManagement />
+            <GenericTable
+              columns={surveyColumns}
+              heading="Survey Details"
+              rowsPerPage={5}
+              themeColor="#007bff"
+              onSelectionChange={() => {}}
+              data={surveyData}
+            />
+          </div>
+        </div>
       </div>
       <Footer />
     </div>
