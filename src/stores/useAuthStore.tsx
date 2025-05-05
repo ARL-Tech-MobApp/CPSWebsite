@@ -51,7 +51,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     // Set new timeout for 15 minutes (matches token expiry)
     const newTimeout = setTimeout(() => {
-      get().setShowRefreshPrompt(true);
+      get().clearTokens();
     }, 15 * 60 * 1000); // 15 minutes
 
     set({
@@ -96,22 +96,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const timeLeft = Number(accessTokenTime) + fifteenMinutes - now;
 
       if (timeLeft > 0) {
-        // If time hasn't expired, set a new timeout
         const timeout = setTimeout(() => {
-          get().setShowRefreshPrompt(true);
+          get().clearTokens();
         }, timeLeft);
-
+      
         set({
           accessToken: access,
           refreshToken: refresh,
           tokenTimeout: timeout,
         });
-
-        // Fetch user profile after hydrating tokens
+      
         get().fetchUserProfile();
       } else {
-        // If time has expired, clear tokens
-        get().clearTokens();
+        get().clearTokens(); // Token expired immediately
       }
     }
   },
