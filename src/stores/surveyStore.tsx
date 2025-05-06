@@ -28,32 +28,42 @@ export type Survey = {
 
 interface SurveyState {
   surveys: Survey[];
+  lastKey: string | null; // Add a state for lastKey
   surveyloading: boolean;
   error: string | null;
-  fetchSurveys: () => Promise<void>;
+  fetchSurveys: (limit: string, lastKey?: string | null) => Promise<void>;
   addSurvey: (surveyData: Omit<Survey, "id">) => Promise<void>;
 }
 
 type SurveyResponse = {
   surveys: Survey[];
+  lastEvaluatedKey: string | null;
 };
 
 export const useSurveyStore = create<SurveyState>((set) => ({
+  
   surveys: [],
   surveyloading: false,
   error: null,
+ lastKey: null, // Add a state for lastKey
 
-  fetchSurveys: async () => {
+  fetchSurveys: async (limit, lastKey = null) => {
+    console.log("Fetching surveys with limit:", limit, "and lastKey:", lastKey);
     set({ surveyloading: true, error: null });
     try {
       const response = await axios.get<SurveyResponse>(
-        "https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/get-survey"
+        `https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/get-survey?limit=${limit}&lastKey=${lastKey || ''}`
       );
-      set({ surveys: response.data.surveys, surveyloading: false });
-    } catch (error) {
+      set((state) => ({
+        surveys: lastKey ? [...state.surveys, ...response.data.surveys] : response.data.surveys, // Append data for pagination
+        lastKey: response.data.lastEvaluatedKey || null, // Update lastKey for the next request
+        surveyloading: false,
+      }));
+    }catch (error) {
       set({ error: "Failed to fetch surveys", surveyloading: false });
     }
   },
+  
 
   addSurvey: async (surveyData) => {
     set({ surveyloading: true, error: null });

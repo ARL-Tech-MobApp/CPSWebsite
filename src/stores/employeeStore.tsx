@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import axios from 'axios';
 
 interface Employee {
-  id: number;
+  id?: string;
   fullName: string;
   dob: string;
   position: string;
@@ -12,6 +12,7 @@ interface Employee {
   address: string;
   joiningdate: string;
   salary: string;
+  cities: string[];
 }
 
 interface EmployeeState {
@@ -23,6 +24,7 @@ interface EmployeeState {
   searchQuery: string;
   fetchEmployees: (page?: number, limit?: number, search?: string) => Promise<void>;
   addEmployee: (employee: Omit<Employee, 'id'>) => Promise<void>;
+  updateEmployee: (id: string, employee: Omit<Employee, 'id'>) => Promise<void>;
   setCurrentPage: (page: number) => void;
   setSearchQuery: (query: string) => void;
 }
@@ -67,6 +69,22 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
       await get().fetchEmployees(1); // Reset to first page
     } catch (error) {
       console.error("Error adding employee:", error);
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
+  updateEmployee: async (id,employee) => {
+    try {
+      set({ loading: true });
+      await axios.post(
+        `https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/update-profile?employeeId=${id}`,
+        employee
+      );
+      // Refresh the employee list after adding
+      await get().fetchEmployees(1); // Reset to first page
+    } catch (error) {
+      console.error("Error update employee:", error);
       throw error;
     } finally {
       set({ loading: false });

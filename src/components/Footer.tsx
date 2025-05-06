@@ -1,8 +1,10 @@
 import React from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "../stores/useAuthStore";
 
 const Footer: React.FC = () => {
+  const { accessToken } = useAuthStore();
   return (
     <footer
       id="footer"
@@ -112,11 +114,13 @@ const Footer: React.FC = () => {
                   Contact Us
                 </Button>
               </Link>
+              {/* {!accessToken && ( */}
               <Link to="/employee-portals">
                 <Button variant="primary" className="mt-3">
                   Access Employee Tools
                 </Button>
               </Link>
+              {/* )} */}
             </div>
             <div className="d-flex gap-2 flex-wrap mt-3">
               <a

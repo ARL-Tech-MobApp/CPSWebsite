@@ -17,6 +17,7 @@
     "axios": "^1.9.0",
     "bootstrap": "^5.3.5",
     "bootstrap-icons": "^1.11.3",
+    "moment": "^2.30.1",
     "react": "^19.1.0",
     "react-awesome-reveal": "^4.3.1",
     "react-bootstrap": "^2.10.9",
@@ -33,9 +34,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-  "build": "CI=false react-scripts build",
-  "test": "react-scripts test",
-  "eject": "react-scripts eject"
+    "build": "CI=false react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
