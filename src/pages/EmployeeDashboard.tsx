@@ -248,8 +248,8 @@ console.log("formvisitordata", visitorFormData)
       title: "Actions",
       render: (row) => (
         <div>
-          <button className="btn btn-sm btn-primary me-2" onClick={() => handleView(row)}>view</button>
-          <button className="btn btn-sm btn-primary me-2" onClick={() => handleEdit(row)}>Edit</button>
+          <button className="btn btn-sm btn-primary me-4 mb-2" onClick={() => handleView(row)}>View</button>
+          <button className="btn btn-sm btn-primary me-4 mb-2" onClick={() => handleEdit(row)}>Edit</button>
           <button className="btn btn-sm btn-danger" onClick={() => handleDelete(row)}>Delete</button>
         </div>
       ),
@@ -272,9 +272,8 @@ console.log("formvisitordata", visitorFormData)
       title: "Actions",
       render: (row) => (
         <div>
-          <button className="btn btn-sm btn-primary me-2" onClick={() => handleView(row)}>view</button>
-
-          <button className="btn btn-sm btn-primary me-2" onClick={() => handleEditVisitor(row)}>Edit</button>
+          <button className="btn btn-sm btn-primary me-2 mb-2" onClick={() => handleView(row)}>View</button>
+          <button className="btn btn-sm btn-primary me-2 mb-2" onClick={() => handleEditVisitor(row)}>Edit</button>
           <button className="btn btn-sm btn-danger" onClick={() => handleDeleteVisitor(row)}>Delete</button>
         </div>
       ),

@@ -31,7 +31,7 @@ const Header: React.FC = () => {
                 <h1 className="sitename m-0  fw-bold ">
                   {accessToken ? `Hi ${userProfile?.fullName}` : "CPS Pvt Ltd"}
                 </h1>
-                {/* <h2 className="sitename-sub m-0 fw-semibold">Services Pvt Ltd</h2> */}
+                <h3 className="sitename-sub m-0 ">Welcome to CPS Pvt Ltd</h3>
               </div>
             </Navbar.Brand>
 
