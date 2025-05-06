@@ -31,6 +31,9 @@ interface TableProps<T> {
   hideSearch?: boolean;
   heading?: string;
   idKey?: keyof T;
+  fetch?: (lastKey: string | null) => Promise<void>;
+  lastkey?: string | null;
+
 }
 
 const GenericTable = <T extends Record<string, any>>({
@@ -43,6 +46,8 @@ const GenericTable = <T extends Record<string, any>>({
   hideSearch = false,
   heading,
   idKey = "id" as keyof T,
+  fetch,
+  lastkey
 }: TableProps<T>) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortColumn, setSortColumn] = useState<keyof T | null>(null);
@@ -166,9 +171,15 @@ const GenericTable = <T extends Record<string, any>>({
         )}
         
         <Pagination.Next
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-        />
+  disabled={!lastkey} // Disable if there's no lastkey
+  onClick={async () => {
+    if (lastkey && fetch) {
+      await fetch(lastkey);
+      setCurrentPage((prev) => prev + 1);
+    }
+  }}
+/>
+
       </Pagination>
     );
   };

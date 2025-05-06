@@ -10,12 +10,15 @@ import {
 } from "react-bootstrap";
 import { BsPersonPlus, BsCheckCircle, BsArrowLeft } from "react-icons/bs";
 import { useEmployeeStore } from "../stores/employeeStore";
+import MultiSelectDropdown from "./MultiSelectDropdown";
 
 const PersonPlusIcon = BsPersonPlus as unknown as React.FC;
 const CheckIcon = BsCheckCircle as unknown as React.FC;
 const ArrowLeftIcon = BsArrowLeft as unknown as React.FC;
 
+
 interface EmployeeFormData {
+  id?: string; // Optional for new employees
   fullName: string;
   position: string;
   department: string;
@@ -24,27 +27,45 @@ interface EmployeeFormData {
   phone?: string;
   address?: string;
   joiningDate: string;
-  salary?: number;
+  salary?: string;
+  cities?: string[];
 }
+
+interface Props {
+  formData: EmployeeFormData;
+  setFormData: React.Dispatch<React.SetStateAction<EmployeeFormData>>;
+  showModal: boolean;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 type FormControlElement =
   | HTMLInputElement
   | HTMLSelectElement
   | HTMLTextAreaElement;
-const EmployeeManagement: React.FC = () => {
+  const EmployeeManagement: React.FC<Props> = ({
+    formData,
+    setFormData,
+    showModal,
+    setShowModal,
+  }) => {
   const [isUploading, setIsUploading] = useState(false);
-  const { addEmployee } = useEmployeeStore();
-  const [showModal, setShowModal] = useState(false);
-  const [formStep, setFormStep] = useState<number>(1);
-  const [formData, setFormData] = useState<EmployeeFormData>({
-    fullName: "",
-    position: "",
-    department: "",
-    dob: "",
-    email: "",
-    joiningDate: new Date().toISOString().split("T")[0], // Default to today's date
-  });
-  const [submittedData, setSubmittedData] = useState<EmployeeFormData[]>([]);
+  const { addEmployee,updateEmployee } = useEmployeeStore();
 
+  const cityOptions = [
+    "Bhubaneswar",
+    "Cuttack",
+    "Jajpur",
+    "Salipur",
+    "Rourkela",
+    "Balasore",
+    "Berhampur",
+    "Puri",
+  ].map((city) => ({
+    label: city,
+    value: city.toLowerCase().replace(/\s+/g, "_"),
+  }));
+   
+  const [formStep, setFormStep] = useState<number>(1);
   const handleInputChange = (e: React.ChangeEvent<FormControlElement>) => {
     const { name, value, type } = e.target as
       | HTMLInputElement
@@ -56,6 +77,12 @@ const EmployeeManagement: React.FC = () => {
       [name]: type === "number" ? parseFloat(value) : value,
     }));
   };
+  const handleCityChange = (selectedList: any[]) => {
+    setFormData((prev) => ({
+      ...prev,
+      cities: selectedList.map((item) => item.value), // get the selected values
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,6 +91,22 @@ const EmployeeManagement: React.FC = () => {
     } else {
       setIsUploading(true);
       try {
+        if(formData?.id) {
+          const updatedData = {
+            id: formData.id,
+            fullName: formData.fullName,
+            position: formData.position,
+            department: formData.department,
+            dob: formData.dob,
+            email: formData.email,
+            phonenumber: formData.phone || "",
+            address: formData.address || "",
+            joiningdate: formData.joiningDate,
+            salary: formData.salary?.toString() || "",
+            cities: formData.cities || [],
+          }
+          await updateEmployee(formData.id,updatedData)
+        }else{  
         await addEmployee({
           fullName: formData.fullName,
           position: formData.position,
@@ -74,8 +117,9 @@ const EmployeeManagement: React.FC = () => {
           address: formData.address || "",
           joiningdate: formData.joiningDate,
           salary: formData.salary?.toString() || "",
+          cities: formData.cities || [],
         });
-
+      }
         // Reset form
         setFormData({
           fullName: "",
@@ -148,6 +192,12 @@ const EmployeeManagement: React.FC = () => {
           </Form.Group>
         </Col>
       </Row>
+      <MultiSelectDropdown
+        options={cityOptions}
+        label="Choose Cities"
+        value={formData.cities}
+        onChange={handleCityChange}
+      />
 
       <Row className="mb-3">
         <Col md={6}>

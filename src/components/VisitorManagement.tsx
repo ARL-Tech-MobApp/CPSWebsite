@@ -14,6 +14,7 @@ import { BsUpload, BsCheckCircle, BsArrowLeft } from "react-icons/bs";
 import { useSurveyStore } from "../stores/surveyStore";
 import { useAuthStore } from "../stores/useAuthStore";
 import axios from "axios";
+
 const UploadIcon = BsUpload as unknown as React.FC;
 const CheckIcon = BsCheckCircle as unknown as React.FC;
 const ArrowLeftIcon = BsArrowLeft as unknown as React.FC;
@@ -22,37 +23,52 @@ type VisitorType =
   | "excavator"
   | "mixture_machine"
   | "construction_material"
-  | "other";
+  | "cement steel store"
+  |"local supplier"
+  |"marbal & tile store"
+  |"concrete product"
+  | "other"
+  ;
+  
 type ConstructionMaterial = "sand" | "bricks" | "cement" | "steel";
 type ShopStatus = "with_shop" | "without_shop";
 
 interface VisitorFormData {
+  employeeId?: string;
   visitorType: VisitorType[];
   hasVisitingCard: boolean;
-  visitingCard?: File | null;
+  visitingCard?: File | null ;
   description?: string;
   vendorName?: string;
   ownerName?: string;
   contact1?: string;
   contact2?: string;
+  whatsappNumber?: string;
   address?: string;
   pincode?: string;
   constructionMaterials?: ConstructionMaterial[];
   shopStatus?: ShopStatus;
 }
 
-const VisitorManagement: React.FC = () => {
+interface Props {
+  formData: VisitorFormData;
+  setFormData: React.Dispatch<React.SetStateAction<VisitorFormData>>;
+  showModal: boolean;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const VisitorManagement: React.FC<Props> = ({
+    formData,
+    setFormData,
+    showModal,
+    setShowModal,
+  }) =>{
   const [showUploadProgress, setShowUploadProgress] = useState(false);
   const { fetchSurveys, addSurvey, surveyloading } = useSurveyStore();
   const { userProfile, profileLoading } = useAuthStore();
-  const [showModal, setShowModal] = useState(false);
   const [formStep, setFormStep] = useState<number>(1);
-  const [formData, setFormData] = useState<VisitorFormData>({
-    visitorType: [],
-    hasVisitingCard: false,
-  });
   const [submittedData, setSubmittedData] = useState<VisitorFormData[]>([]);
-
+console.log("formDatahdfi", formData);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked, files } = e.target;
 
@@ -100,9 +116,77 @@ const VisitorManagement: React.FC = () => {
       }));
     }
   };
+    // Handle selecting WhatsApp number
+    const handleWhatsappChange = (contactNumber: string) => {
+      setFormData((prev) => ({
+        ...prev,
+        whatsappNumber: contactNumber,
+      }));
+    };
+  
+    // Check if the number starts with '1' or '2' for WhatsApp
+    const getWhatsappStyle = (contact: string) => {
+      if (contact && (contact.startsWith("1") || contact.startsWith("2")) && contact.length === 10) {
+        return { backgroundColor: "green", color: "white" }; // Apply green background if it's a WhatsApp number
+      }
+      return {};
+    };
+  
 
+  const validateForm = (): string | null => {
+    if (formStep === 1) {
+      if (formData.visitorType.length === 0) {
+        return "Please select at least one visitor type.";
+      }
+    }
+  
+    if (formStep === 2) {
+      if (formData.hasVisitingCard && !formData.visitingCard) {
+        return "Please upload a visiting card.";
+      }
+       
+      if(!formData.hasVisitingCard){
+      if (!formData.vendorName?.trim()) return "Vendor name is required.";
+      if (!formData.ownerName?.trim()) return "Owner name is required.";
+      if (!formData.contact1?.trim()) return "Primary contact is required.";
+      if (!/^\d{10}$/.test(formData.contact1)) return "Enter valid 10-digit contact.";
+      if (formData.contact2 && !/^\d{10}$/.test(formData.contact2)) {
+        return "Enter valid 10-digit secondary contact.";
+      }
+      if (!formData.whatsappNumber) {
+        return "please select the check box for which is ur whtsappNumer.";
+      }
+      if (!formData.address?.trim()) return "Address is required.";
+      if (!formData.pincode?.trim()) return "Pincode is required.";
+      if (!/^\d{6}$/.test(formData.pincode)) return "Enter valid 6-digit pincode.";
+      if (!formData.description?.trim()) { 
+        return "Description is required.";
+      }
+    }
+    
+  
+      if (
+        formData.visitorType.includes("construction_material") &&
+        (!formData.constructionMaterials ||
+          formData.constructionMaterials.length === 0)
+      ) {
+        return "Please select at least one construction material.";
+      }
+      if (formData.visitorType.includes("construction_material") && !formData.shopStatus) return "Please select a shop status.";
+
+    }
+
+  
+    return null;
+  };
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const errorMessage = validateForm();
+    if (errorMessage) {
+      alert(errorMessage);
+      return;
+    }
 
     if (formStep < 3) {
       setFormStep((prev) => prev + 1);
@@ -119,10 +203,11 @@ const VisitorManagement: React.FC = () => {
         ownerName: formData.ownerName || "None",
         contact1: formData.contact1 || "None",
         contact2: formData.contact2 || "None",
+        whatsappNumber: formData?.whatsappNumber || "None",
         address: formData.address || "None",
         pincode: formData.pincode || "None",
-        constructionMaterials: formData.constructionMaterials?.join(",")|| "None",
-        shopStatus: formData.shopStatus || "None",
+        materialName: formData.constructionMaterials?.join(",")|| "None",
+        shopType: formData.shopStatus || "None",
         visitingCardFileName: formData.visitingCard?.name || undefined,
       };
 
@@ -156,7 +241,7 @@ const VisitorManagement: React.FC = () => {
       }
 
       // Refresh data and reset form
-      await fetchSurveys();
+      // await fetchSurveys();
       setFormData({
         visitorType: [],
         hasVisitingCard: false,
@@ -168,6 +253,7 @@ const VisitorManagement: React.FC = () => {
         contact2: "",
         address: "",
         pincode: "",
+        whatsappNumber: "",
         constructionMaterials: [],
       });
       setFormStep(1);
@@ -232,6 +318,10 @@ const VisitorManagement: React.FC = () => {
             { value: "excavator", label: "Excavator" },
             { value: "mixture_machine", label: "Mixture Machine" },
             { value: "construction_material", label: "Construction Material" },
+            { value: "cement_steel_store", label: "Cement & Steel Store" },
+            { value: "local_supplier", label: "Local Supplier" },
+            { value: "marbal_tile_store", label: "Marble & Tile Store" },
+            { value: "concrete_product", label: "Concrete Product" },
             { value: "other", label: "Other" },
           ].map((type) => (
             <Col key={type.value} sm={6} className="mb-2">
@@ -281,7 +371,7 @@ const VisitorManagement: React.FC = () => {
               onChange={handleInputChange}
             />
             <Form.Text muted>
-              Please upload a clear image or PDF of the visiting card
+              Please upload a clear image or PDF of the visiting card 
             </Form.Text>
           </Form.Group>
 
@@ -378,30 +468,43 @@ const VisitorManagement: React.FC = () => {
           </Row>
 
           <Row className="mb-3">
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Contact Number 1</Form.Label>
-                <Form.Control
-                  type="tel"
-                  name="contact1"
-                  value={formData.contact1 || ""}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Contact Number 2 (Optional)</Form.Label>
-                <Form.Control
-                  type="tel"
-                  name="contact2"
-                  value={formData.contact2 || ""}
-                  onChange={handleInputChange}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
+        <Col md={6}>
+          <Form.Group>
+            <Form.Label>Contact Number 1</Form.Label>
+            <Form.Control
+              type="tel"
+              name="contact1"
+              value={formData.contact1 || ""}
+              onChange={handleInputChange}
+              required
+            />
+            <Form.Check
+              type="checkbox"
+              label="Set as WhatsApp Number"
+              checked={formData.whatsappNumber === formData.contact1}
+              onChange={() => handleWhatsappChange(formData.contact1 || "")}
+            />
+          </Form.Group>
+        </Col>
+        <Col md={6}>
+          <Form.Group>
+            <Form.Label>Contact Number 2 (Optional)</Form.Label>
+            <Form.Control
+              type="tel"
+              name="contact2"
+              value={formData.contact2 || ""}
+              onChange={handleInputChange}
+             
+            />
+            <Form.Check
+              type="checkbox"
+              label="Set as WhatsApp Number"
+              checked={formData.whatsappNumber === formData.contact2}
+              onChange={() => handleWhatsappChange(formData.contact2 || "")}
+            />
+          </Form.Group>
+        </Col>
+      </Row>
 
           <Form.Group className="mb-3">
             <Form.Label>Address</Form.Label>
@@ -425,10 +528,20 @@ const VisitorManagement: React.FC = () => {
               required
             />
           </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              name="description"
+              value={formData.description || ""}
+              onChange={handleInputChange}
+            />
+          </Form.Group>
 
           {showConstructionMaterialOptions && (
             <>
-              <Form.Group className="mb-3">
+              <Form.Group className="mb-3">  
                 <Form.Label>Select Construction Materials</Form.Label>
                 <Row>
                   {["sand", "steel", "cement", "bricks", "crusher_metal"].map(
@@ -528,22 +641,25 @@ const VisitorManagement: React.FC = () => {
           ) : (
             <>
               <li className="list-group-item">
-                <strong>Vendor Name:</strong> {formData.vendorName}
+                <strong>Vendor Name:</strong> {formData?.vendorName}
               </li>
               <li className="list-group-item">
-                <strong>Owner Name:</strong> {formData.ownerName}
+                <strong>Owner Name:</strong> {formData?.ownerName}
               </li>
               <li className="list-group-item">
-                <strong>Contact Number 1:</strong> {formData.contact1}
+                <strong>Contact Number 1:</strong> {formData?.contact1}
               </li>
               <li className="list-group-item">
-                <strong>Contact Number 2:</strong> {formData.contact2 || "N/A"}
+                <strong>Contact Number 2:</strong> {formData?.contact2 || "N/A"}
               </li>
               <li className="list-group-item">
-                <strong>Address:</strong> {formData.address}
+                <strong>WhtsappNumber:</strong> {formData?.whatsappNumber || "N/A"}
               </li>
               <li className="list-group-item">
-                <strong>Pincode:</strong> {formData.pincode}
+                <strong>Address:</strong> {formData?.address}
+              </li>
+              <li className="list-group-item">
+                <strong>Pincode:</strong> {formData?.pincode}
               </li>
 
               {formData.visitorType.includes("construction_material") && (
@@ -568,6 +684,7 @@ const VisitorManagement: React.FC = () => {
 
   return (
     <>
+    {userProfile?.isAdmin === "true"?null: (
       <Button
         variant="primary"
         onClick={() => setShowModal(true)}
@@ -575,7 +692,7 @@ const VisitorManagement: React.FC = () => {
       >
         Add Vendor Details
       </Button>
-
+)}
       <Modal show={showModal} onHide={resetForm}>
         <Modal.Header closeButton>
           <Modal.Title>Vendor Survey</Modal.Title>
