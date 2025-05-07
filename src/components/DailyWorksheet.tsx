@@ -203,8 +203,11 @@ const DailyWorksheetApp: React.FC = () => {
                 <div className="d-flex justify-content-between">
                   <div>
                     <div className="fw-bold">
-                      {new Date(item.time).toLocaleString()}
+                      {moment(item.time).format("dddd, D MMMM [at] h:mm A")}
                     </div>
+                    <div className="fw-bold">
+  {moment(item.time).fromNow()}
+</div>
                     <div className="container p-2">
                       {item.content.length > 100
                         ? `${item.content.substring(0, 100)}...`
