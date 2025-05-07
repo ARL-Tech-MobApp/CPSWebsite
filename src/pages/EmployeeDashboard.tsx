@@ -29,7 +29,6 @@ interface EmployeeFormData {
   joiningDate: string;
   salary?: string;
   cities?: string[];
-  city?: string; // Added city property
 }
 
 declare global {
@@ -73,8 +72,7 @@ function EmployeeDashboard() {
   const [showVisitorModal, setShowVisitorModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewType, setViewType] = useState<"employee" | "survey" | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isEditMode, setIsEditMode] = useState(false);
+
   const profileFields = [
     { label: "Full Name", value: userProfile?.fullName },
     { label: "Position", value: userProfile?.position },
@@ -113,7 +111,7 @@ function EmployeeDashboard() {
 
   const [formData, setFormData] = useState<EmployeeFormData>({
     fullName: "",
-    id: "",
+    empId: "",
     position: "",
     department: "",
     dob: "",
@@ -123,7 +121,6 @@ function EmployeeDashboard() {
     address: "",
     salary: "",
     cities: [],
-    city: "",
   });
   const [visitorFormData, setVisitorFormData] = useState<VisitFormData>({
     visitorType: [],
@@ -145,8 +142,8 @@ function EmployeeDashboard() {
     city: string;
   };
 
-  const { employees, fetchEmployees,deleteEmployee } = useEmployeeStore();
-  const { surveys,deleteSurvey, surveyloading, fetchSurveys, lastKey, } = useSurveyStore();
+  const { employees, fetchEmployees } = useEmployeeStore();
+  const { surveys, surveyloading, fetchSurveys, lastKey } = useSurveyStore();
   console.log("surveys", surveys);
   useEffect(() => {
     // Fetch the first batch of data
@@ -164,21 +161,46 @@ function EmployeeDashboard() {
 
   const handleEdit = (employee: Employee) => {
     setFormData({
-      id: employee.id,
+      empId: employee.id,
       fullName: employee.fullName,
       position: employee.position,
       department: employee.department,
-      city: employee.city,
       dob: employee.dob,
       email: employee.email,
       phone: employee.phoneNumber,
       address: employee.address,
       salary: employee.salary,
-      joiningDate: moment(employee.joiningDate, "dddd, DD MMM [at] hh:mm A").format("YYYY-MM-DD")
-
+      joiningDate: employee.joiningDate, // Use the existing joining date if available
     });
     setShowEmployeeModal(true);
-    setIsEditMode(true);
+  };
+  const handleDelete = async (employee: Employee) => {
+    if (window.confirm("Are you sure you want to delete this employee?")) {
+      try {
+        const response = await fetch(
+          "https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/delete-employee",
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id: employee.id,
+            }),
+          }
+        );
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+  
+        await fetchEmployees(); // Refresh the employee list
+        alert("Employee deleted successfully.");
+      } catch (error) {
+        console.error("Error deleting employee:", error);
+        alert("Failed to delete employee.");
+      }
+    }
   };
   
 
@@ -194,8 +216,7 @@ function EmployeeDashboard() {
       vendorName: survey.vendorName ?? "",
       ownerName: survey.ownerName ?? "",
       contact1: survey.contact1 ?? "",
-      contact2: survey.contact2==="None"?"":survey.contact2 ?? "",
-      whatsappNumber: survey.whatsappNumber ?? "",
+      contact2: survey.contact2 ?? "",
       address: survey.address ?? "",
       pincode: survey.pincode ?? "",
       constructionMaterials: survey.constructionMaterials
@@ -208,22 +229,43 @@ function EmployeeDashboard() {
     setShowVisitorModal(true);
   };
 
+  const handleDeleteVisitor = async (survey: Survey) => {
+    if (window.confirm("Are you sure you want to delete this visitor?")) {
+      try {
+        const response = await fetch(
+          `https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/delete-visitor?employeeId=${survey.employeeId}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        await fetchEmployees();
+        alert("visitor deleted successfully.");
+      } catch (error) {
+        console.error("Error deleting visitor:", error);
+        alert("Failed to delete visitor.");
+      }
+    }
+  };
 
   const handleView = (item: any) => {
     if ("fullName" in item) {
       // it's an employee
       setFormData({
-        id: item.id,
+        empId: item.id,
         fullName: item.fullName,
         position: item.position,
         department: item.department,
-        city: item.city,
         dob: item.dob,
         email: item.email,
-        phone: item.phoneNumber,
+        phone: item.phonenumber,
         address: item.address,
         salary: item.salary,
-        joiningDate: item.joiningDate,
+        joiningDate: item.joiningdate,
       });
       setViewType("employee");
     } else {
@@ -283,7 +325,7 @@ function EmployeeDashboard() {
           </button>
           <button
             className="btn btn-sm btn-danger"
-            onClick={() => deleteEmployee({id:row?.id})}
+            onClick={() => handleDelete(row)}
           >
             Delete
           </button>
@@ -308,8 +350,7 @@ function EmployeeDashboard() {
           <img
             src={String(row.visitingCardUrl)}
             alt="Visiting Card"
-            style={{ width: "100px", height: "auto", objectFit: "cover", cursor: "pointer" }}
-            onClick={() => setSelectedImage(typeof row.visitingCardUrl === 'string' ? row.visitingCardUrl : null)}
+            style={{ width: "100px", height: "auto", objectFit: "cover" }}
           />
         ) : (
           "No Image"
@@ -381,7 +422,7 @@ function EmployeeDashboard() {
   const employeeData: Employee[] = (sortedEmployees ?? [])
     .filter((emp): emp is Employee => !!emp)
     .map((emp) => ({
-      id: emp.id,
+      empId: emp.id,
       fullName: emp.fullName || "N/A",
       dob: emp.dob || "N/A",
       position: emp.position || "N/A",
@@ -516,8 +557,6 @@ function EmployeeDashboard() {
                   setFormData={setFormData}
                   showModal={showEmployeeModal}
                   setShowModal={setShowEmployeeModal}
-                  isEditMode={isEditMode}
-                  setIsEditMode={setIsEditMode}
                 />
                 <GenericTable
                   columns={userColumns}
@@ -627,34 +666,6 @@ function EmployeeDashboard() {
           </div>
         </div>
       </div>
-      {selectedImage && (
-        <div
-          onClick={() => setSelectedImage(null)}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.7)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 9999,
-          }}
-        >
-          <img
-            src={selectedImage}
-            alt="Full Visiting Card"
-            style={{
-              maxWidth: "90%",
-              maxHeight: "90%",
-              borderRadius: 8,
-              boxShadow: "0 0 10px #fff",
-            }}
-          />
-        </div>
-      )}
       <Footer />
     </div>
   );

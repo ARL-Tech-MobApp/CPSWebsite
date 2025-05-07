@@ -209,26 +209,27 @@ const DailyWorksheetApp: React.FC = () => {
                   </div>
                   <div className="text-end">
                     <Button
-                      variant="outline-secondary"
+                      // variant="outline-secondary"
                       size="sm"
-                      className="me-2"
+                      className="btn btn-sm btn-primary me-2 mb-2"
                       onClick={() => handleShowModal(item)}
                       disabled={isLoading}
                     >
                       Edit
                     </Button>
                     <Button
-                      variant="outline-danger"
+                      // variant="outline-danger"
                       size="sm"
-                      className="me-2"
+                      className="btn btn-sm btn-danger me-2 mb-2"
                       onClick={() => handleDelete(item.id)}
                       disabled={isLoading}
                     >
                       Delete
                     </Button>
                     <Button
-                      variant="outline-info"
+                      // variant="outline-info"
                       size="sm"
+                      className="btn btn-sm btn-primary me-2 mb-2"
                       onClick={() => handleViewMore(item.content)}
                     >
                       View More
