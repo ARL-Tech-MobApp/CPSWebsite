@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import axios from 'axios';
+import moment from 'moment';
 
 interface Employee {
   id?: string;
@@ -49,7 +50,9 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
         }
       );
       set({
-        employees: response.data.employees,
+        employees: response.data.employees.sort((a: { createdAt: moment.MomentInput; }, b: { createdAt: moment.MomentInput; }) =>
+          moment(b.createdAt).diff(moment(a.createdAt))
+        ),
         totalCount: response.data.totalCount,
         currentPage: page,
       });
