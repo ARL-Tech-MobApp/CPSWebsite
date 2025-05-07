@@ -5,6 +5,7 @@ import axios from "axios";
 
 // Define the Survey type directly in the store
 export type Survey = {
+  id?: any;
   employee: {};
   constructionMaterials: string;
   employeeId: string;
@@ -15,6 +16,7 @@ export type Survey = {
   ownerName?: string;
   contact1?: string;
   contact2?: string;
+  whatsappNumber?: string;
   address?: string;
   pincode?: string;
   shopStatus?: string;
@@ -35,6 +37,8 @@ interface SurveyState {
   error: string | null;
   fetchSurveys: (limit?: string, lastKey?: string | null) => Promise<void>;
   addSurvey: (surveyData: Omit<Survey, "id">) => Promise<void>;
+  deleteSurvey: (surveyId: any) => Promise<void>;
+
 }
 
 type SurveyResponse = {
@@ -83,4 +87,29 @@ export const useSurveyStore = create<SurveyState>((set) => ({
       throw error;
     }
   },
+  deleteSurvey: async (surveyId: any) => {
+    set({ surveyloading: true, error: null });
+    console.log("Deleting survey with ID:", surveyId);
+  
+    if (window.confirm("Are you sure you want to delete this visitor?")) {
+      try {
+        await axios.delete(
+          `https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/delete-survey`,surveyId
+        );
+        set((state) => ({
+          surveys: state.surveys.filter((survey) => survey.id !== surveyId),
+          surveyloading: false,
+        }));
+  
+        alert("Visitor deleted successfully.");
+      } catch (error) {
+        set({ error: "Failed to delete survey", surveyloading: false });
+        alert("Failed to delete survey.");
+        throw error;
+      }
+    } else {
+      set({ surveyloading: false }); // In case user cancels
+    }
+  },
+  
 }));

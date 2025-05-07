@@ -35,6 +35,9 @@ interface Props {
   setFormData: React.Dispatch<React.SetStateAction<EmployeeFormData>>;
   showModal: boolean;
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+  isEditMode?: boolean;
+  setIsEditMode?: React.Dispatch<React.SetStateAction<boolean>>;
+
 }
 
 type FormControlElement =
@@ -46,7 +49,11 @@ const EmployeeManagement: React.FC<Props> = ({
   setFormData,
   showModal,
   setShowModal,
+  isEditMode,
+  setIsEditMode,
 }) => {
+console.log("hdsffjds",formData)
+
   const [isUploading, setIsUploading] = useState(false);
   const { addEmployee, updateEmployee } = useEmployeeStore();
 
@@ -62,7 +69,6 @@ const EmployeeManagement: React.FC<Props> = ({
       [name]: type === "number" ? parseFloat(value) : value,
     }));
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formStep < 3) {
@@ -70,7 +76,7 @@ const EmployeeManagement: React.FC<Props> = ({
     } else {
       setIsUploading(true);
       try {
-        if (formData?.id) {
+        if (isEditMode) {
           const updatedData = {
             empId: formData.id,
             fullName: formData.fullName,
@@ -84,10 +90,11 @@ const EmployeeManagement: React.FC<Props> = ({
             salary: formData.salary?.toString() || "",
             city: formData.city || "",
           };
-          await updateEmployee(formData.id, updatedData);
+          await updateEmployee(formData.id || "", updatedData);
+          alert("Employee updated successfully!");
         } else {
           await addEmployee({
-            empId: formData.empId,
+            empId: formData.id,
             fullName: formData.fullName,
             position: formData.position,
             department: formData.department,
@@ -99,11 +106,12 @@ const EmployeeManagement: React.FC<Props> = ({
             salary: formData.salary?.toString() || "",
             city: formData.city || "",
           });
+          alert("Employee added successfully!");
         }
         // Reset form
         setFormData({
           fullName: "",
-          empId: "",
+          id: "",
           position: "",
           department: "",
           dob: "",
@@ -117,6 +125,7 @@ const EmployeeManagement: React.FC<Props> = ({
         setFormStep(1);
         setIsUploading(false);
         setShowModal(false);
+        setIsEditMode && setIsEditMode(false);
       } catch (error) {
         setIsUploading(false);
         console.error("❌ Failed to submit data:", error);
@@ -157,7 +166,7 @@ const EmployeeManagement: React.FC<Props> = ({
             <Form.Control
               type="text"
               name="empId"
-              value={formData.empId}
+              value={formData?.id}
               onChange={handleInputChange}
               required
             />
