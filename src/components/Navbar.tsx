@@ -31,15 +31,15 @@ const Header: React.FC = () => {
                 <h1 className="sitename m-0 fw-bold">
                   {accessToken ? (
                     <>
-                    <span className="d-none d-md-inline">
-                      <span className="fw-bold fs-3">Hi {userProfile?.fullName}</span>, <span className="fw-normal fs-5">Welcome To CPS</span>
+                    <span >
+                      <span className="ffw-bold fs-5 fs-md-3">Hi {userProfile?.fullName}</span>
                     </span>
                     </>
                   ) : (
                   "CPS Pvt Ltd"
                   )}
                 </h1>
-                <h3 className="sitename-sub m-0 ">Welcome to CPS Pvt Ltd</h3>
+                <h4 className="sitename-sub m-0 ">Welcome to CPS Pvt Ltd</h4>
               </div>
             </Navbar.Brand>
 
