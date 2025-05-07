@@ -311,7 +311,7 @@ function EmployeeDashboard() {
         return (
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <span>{row.employeeId}</span>
-            {isNew && (
+            {userProfile?.isAdmin === "true" && isNew && (
               <span
                 style={{
                   backgroundColor: "#28a745",
@@ -408,10 +408,8 @@ function EmployeeDashboard() {
       );
     }
   }, [showEmployeeDetailsModal.status]);
-  const sortedSurveys = filteredSurveys?.slice()?.reverse();
-  const sortedEmployees = employees?.slice()?.reverse();
   const modalRef = useRef<HTMLDivElement | null>(null);
-  const surveyData = sortedSurveys?.map((survey) => ({
+  const surveyData = filteredSurveys?.map((survey) => ({
       ...survey,
       actions: (
         <div>
@@ -430,7 +428,7 @@ function EmployeeDashboard() {
       ),
     }));
 
-  const employeeData: Employee[] = (sortedEmployees ?? [])
+  const employeeData: Employee[] = (employees ?? [])
     .filter((emp): emp is Employee => !!emp)
     .map((emp) => ({
       id: emp.id,
@@ -450,7 +448,6 @@ function EmployeeDashboard() {
         ? moment(emp.createdAt).format("dddd, D MMMM [at] h:mm A")
         : "N/A",
     }));
-  console.log("employeeData", formData);
 
   return (
     <div>
