@@ -4,10 +4,12 @@ interface ViewShowProps {
   showViewModal: boolean;
   setShowViewModal: (value: boolean) => void;
   formData: {
+    id?: string;
     fullName: string;
     position: string;
     department: string;
     dob: string;
+    city?: string;
     email: string;
     joiningDate: string;
     phone?: string;
@@ -38,6 +40,7 @@ export default function ViewShow({
   visitorFormData,
   viewType,
 }: ViewShowProps) {
+    console.log("bnjn",formData)
   return (
     <div>
       {showViewModal && (
@@ -62,6 +65,9 @@ export default function ViewShow({
                 {viewType === "employee" ? (
                   <ul>
                     <li>
+                      <strong>Employee ID:</strong> {formData.id}
+                    </li>
+                    <li>
                       <strong>Name:</strong> {formData.fullName}
                     </li>
                     <li>
@@ -75,6 +81,9 @@ export default function ViewShow({
                     </li>
                     <li>
                       <strong>Department:</strong> {formData.department}
+                    </li>
+                    <li>
+                      <strong>City:</strong> {formData.city}
                     </li>
                     <li>
                       <strong>Phone:</strong> {formData.phone}
@@ -98,7 +107,7 @@ export default function ViewShow({
                       <strong>Owner Name:</strong> {visitorFormData.ownerName}
                     </li>
                     <li>
-                      <strong>Service Types:</strong>{" "}
+                      <strong>Visitor Types:</strong>{" "}
                       {visitorFormData.visitorType?.join(", ")}
                     </li>
                     <li>

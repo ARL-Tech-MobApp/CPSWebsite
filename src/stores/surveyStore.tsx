@@ -2,22 +2,25 @@
 import { create } from "zustand";
 import { ReactNode, ReactElement, JSX } from "react";
 import axios from "axios";
+import moment from "moment";
 
 // Define the Survey type directly in the store
 export type Survey = {
+  id?: any;
   employee: {};
   constructionMaterials: string;
   employeeId: string;
-  serviceType: string;
+  visitorType: string;
   description?: string;
   vendorName?: string;
   materialName?: string;
   ownerName?: string;
   contact1?: string;
   contact2?: string;
+  whatsappNumber?: string;
   address?: string;
   pincode?: string;
-  shopType?: string;
+  shopStatus?: string;
   visitingCardUrl?:
     | ReactNode
     | ReactElement
@@ -35,6 +38,8 @@ interface SurveyState {
   error: string | null;
   fetchSurveys: (limit?: string, lastKey?: string | null) => Promise<void>;
   addSurvey: (surveyData: Omit<Survey, "id">) => Promise<void>;
+  deleteSurvey: (surveyId: any) => Promise<void>;
+
 }
 
 type SurveyResponse = {
@@ -42,7 +47,7 @@ type SurveyResponse = {
   lastEvaluatedKey: string | null;
 };
 
-export const useSurveyStore = create<SurveyState>((set) => ({
+export const useSurveyStore = create<SurveyState>((set,get) => ({
   
   surveys: [],
   surveyloading: false,
@@ -56,11 +61,23 @@ export const useSurveyStore = create<SurveyState>((set) => ({
       const response = await axios.get<SurveyResponse>(
         `https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/get-survey?limit=${limit}&lastKey=${lastKey || ''}`
       );
-      set((state) => ({
-        surveys: lastKey ? [...state.surveys, ...response.data.surveys] : response.data.surveys, // Append data for pagination
-        lastKey: response.data.lastEvaluatedKey || null, // Update lastKey for the next request
-        surveyloading: false,
-      }));
+      const newSurveys = response.data.surveys || [];
+
+    // Combine existing surveys if paginated
+    const allSurveys = lastKey
+      ? [...(get().surveys || []), ...newSurveys]
+      : newSurveys;
+
+    // ✅ Sort by createdAt descending (latest first)
+    const sortedSurveys = allSurveys.sort((a, b) =>
+      moment(b.createdAt).valueOf() - moment(a.createdAt).valueOf()
+    );
+
+    set({
+      surveys: sortedSurveys,
+      lastKey: response.data.lastEvaluatedKey || null,
+      surveyloading: false,
+    });
     }catch (error) {
       set({ error: "Failed to fetch surveys", surveyloading: false });
     }
@@ -83,4 +100,29 @@ export const useSurveyStore = create<SurveyState>((set) => ({
       throw error;
     }
   },
+  deleteSurvey: async (surveyId: any) => {
+    set({ surveyloading: true, error: null });
+    console.log("Deleting survey with ID:", surveyId);
+  
+    if (window.confirm("Are you sure you want to delete this visitor?")) {
+      try {
+        await axios.delete(
+          `https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/delete-survey`,surveyId
+        );
+        set((state) => ({
+          surveys: state.surveys.filter((survey) => survey.id !== surveyId),
+          surveyloading: false,
+        }));
+  
+        alert("Visitor deleted successfully.");
+      } catch (error) {
+        set({ error: "Failed to delete survey", surveyloading: false });
+        alert("Failed to delete survey.");
+        throw error;
+      }
+    } else {
+      set({ surveyloading: false }); // In case user cancels
+    }
+  },
+  
 }));

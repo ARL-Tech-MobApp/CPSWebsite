@@ -8,6 +8,7 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { useAuthStore } from "../stores/useAuthStore";
+import moment from "moment";
 
 interface Worksheet {
   id: string;
@@ -60,7 +61,14 @@ const DailyWorksheetApp: React.FC = () => {
       );
       if (!response.ok) throw new Error("Failed to fetch worksheets");
       const data = await response.json();
-      setWorksheets(data.worksheets || []);
+      const worksheets = data.worksheets || [];
+  
+      // ✅ Sort by time (newest first)
+      const sortedWorksheets = worksheets.sort((a: { time: moment.MomentInput; }, b: { time: moment.MomentInput; }) =>
+        moment(b.time).valueOf() - moment(a.time).valueOf()
+      );
+  
+      setWorksheets(sortedWorksheets);
     } catch (err) {
       console.error("Error fetching worksheets:", err);
       setError("Failed to load worksheets. Please try again.");
@@ -195,8 +203,11 @@ const DailyWorksheetApp: React.FC = () => {
                 <div className="d-flex justify-content-between">
                   <div>
                     <div className="fw-bold">
-                      {new Date(item.time).toLocaleString()}
+                      {moment(item.time).format("dddd, D MMMM [at] h:mm A")}
                     </div>
+                    <div className="fw-bold">
+  {moment(item.time).fromNow()}
+</div>
                     <div className="container p-2">
                       {item.content.length > 100
                         ? `${item.content.substring(0, 100)}...`
@@ -209,26 +220,27 @@ const DailyWorksheetApp: React.FC = () => {
                   </div>
                   <div className="text-end">
                     <Button
-                      variant="outline-secondary"
+                      // variant="outline-secondary"
                       size="sm"
-                      className="me-2"
+                      className="btn btn-sm btn-primary me-2 mb-2"
                       onClick={() => handleShowModal(item)}
                       disabled={isLoading}
                     >
                       Edit
                     </Button>
                     <Button
-                      variant="outline-danger"
+                      // variant="outline-danger"
                       size="sm"
-                      className="me-2"
+                      className="btn btn-sm btn-danger me-2 mb-2"
                       onClick={() => handleDelete(item.id)}
                       disabled={isLoading}
                     >
                       Delete
                     </Button>
                     <Button
-                      variant="outline-info"
+                      // variant="outline-info"
                       size="sm"
+                      className="btn btn-sm btn-primary me-2 mb-2"
                       onClick={() => handleViewMore(item.content)}
                     >
                       View More

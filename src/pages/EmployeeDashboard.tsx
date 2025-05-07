@@ -29,6 +29,7 @@ interface EmployeeFormData {
   joiningDate: string;
   salary?: string;
   cities?: string[];
+  city?: string; // Added city property
 }
 
 declare global {
@@ -72,7 +73,14 @@ function EmployeeDashboard() {
   const [showVisitorModal, setShowVisitorModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewType, setViewType] = useState<"employee" | "survey" | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [touchedSurveyIds, setTouchedSurveyIds] = useState<string[]>([]);
 
+  const markAsTouched = (id: string) => {
+    setTouchedSurveyIds((prev) => Array.from(new Set([...prev, id])));
+  };
+  
   const profileFields = [
     { label: "Full Name", value: userProfile?.fullName },
     { label: "Position", value: userProfile?.position },
@@ -83,7 +91,7 @@ function EmployeeDashboard() {
     // { label: "Phone", value: userProfile?.phoneNumber },
     // { label: "Address", value: userProfile?.address },
     // { label: "Joining Date", value: userProfile?.joiningDate },
-    // { label: "Salary", value: `$${userProfile?.salary.toLocaleString()}` },
+    // { label: "Salary", value: ${userProfile?.salary.toLocaleString()} },
     // {
     //   label: "Created At",
     //   value: new Date(userProfile?.createdAt).toLocaleString(),
@@ -111,7 +119,7 @@ function EmployeeDashboard() {
 
   const [formData, setFormData] = useState<EmployeeFormData>({
     fullName: "",
-    empId: "",
+    id: "",
     position: "",
     department: "",
     dob: "",
@@ -121,6 +129,7 @@ function EmployeeDashboard() {
     address: "",
     salary: "",
     cities: [],
+    city: "",
   });
   const [visitorFormData, setVisitorFormData] = useState<VisitFormData>({
     visitorType: [],
@@ -142,8 +151,8 @@ function EmployeeDashboard() {
     city: string;
   };
 
-  const { employees, fetchEmployees } = useEmployeeStore();
-  const { surveys, surveyloading, fetchSurveys, lastKey } = useSurveyStore();
+  const { employees, fetchEmployees,deleteEmployee } = useEmployeeStore();
+  const { surveys,deleteSurvey, surveyloading, fetchSurveys, lastKey, } = useSurveyStore();
   console.log("surveys", surveys);
   useEffect(() => {
     // Fetch the first batch of data
@@ -161,119 +170,74 @@ function EmployeeDashboard() {
 
   const handleEdit = (employee: Employee) => {
     setFormData({
-      empId: employee.id,
+      id: employee.id,
       fullName: employee.fullName,
       position: employee.position,
       department: employee.department,
+      city: employee.city,
       dob: employee.dob,
       email: employee.email,
       phone: employee.phoneNumber,
       address: employee.address,
       salary: employee.salary,
-      joiningDate: employee.joiningDate, // Use the existing joining date if available
+      joiningDate: moment(employee.joiningDate, "dddd, DD MMM [at] hh:mm A").format("YYYY-MM-DD")
+
     });
     setShowEmployeeModal(true);
-  };
-  const handleDelete = async (employee: Employee) => {
-    if (window.confirm("Are you sure you want to delete this employee?")) {
-      try {
-        const response = await fetch(
-          "https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/delete-employee",
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              id: employee.id,
-            }),
-          }
-        );
-  
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-  
-        await fetchEmployees(); // Refresh the employee list
-        alert("Employee deleted successfully.");
-      } catch (error) {
-        console.error("Error deleting employee:", error);
-        alert("Failed to delete employee.");
-      }
-    }
+    setIsEditMode(true);
   };
   
-
-  console.log("formvisitordata", visitorFormData);
 
   const handleEditVisitor = (survey: Survey) => {
+    markAsTouched(survey.id);
     setVisitorFormData({
       employeeId: survey.employeeId ?? "",
-      visitorType: survey.serviceType
-        ? (survey.serviceType.split(",") as VisitorType[])
+      visitorType: survey.visitorType
+        ? (survey.visitorType.split(",") as VisitorType[])
         : [],
       description: survey.description ?? "",
       vendorName: survey.vendorName ?? "",
       ownerName: survey.ownerName ?? "",
       contact1: survey.contact1 ?? "",
-      contact2: survey.contact2 ?? "",
+      contact2: survey.contact2==="None"?"":survey.contact2 ?? "",
+      whatsappNumber: survey.whatsappNumber ?? "",
       address: survey.address ?? "",
       pincode: survey.pincode ?? "",
-      constructionMaterials: survey.materialName
-        ? (survey.materialName.split(",") as ConstructionMaterial[])
+      constructionMaterials: survey.constructionMaterials
+        ? (survey.constructionMaterials.split(",") as ConstructionMaterial[])
         : [],
-      shopStatus: (survey.shopType as ShopStatus) ?? undefined,
+      shopStatus: (survey.shopStatus as ShopStatus) ?? undefined,
       hasVisitingCard: !!survey.visitingCardUrl,
       visitingCard: undefined, // Visiting card file can't be restored from URL
     });
     setShowVisitorModal(true);
   };
 
-  const handleDeleteVisitor = async (survey: Survey) => {
-    if (window.confirm("Are you sure you want to delete this visitor?")) {
-      try {
-        const response = await fetch(
-          `https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/delete-visitor?employeeId=${survey.employeeId}`,
-          {
-            method: "DELETE",
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        await fetchEmployees();
-        alert("visitor deleted successfully.");
-      } catch (error) {
-        console.error("Error deleting visitor:", error);
-        alert("Failed to delete visitor.");
-      }
-    }
-  };
 
   const handleView = (item: any) => {
     if ("fullName" in item) {
       // it's an employee
       setFormData({
-        empId: item.id,
+        id: item.id,
         fullName: item.fullName,
         position: item.position,
         department: item.department,
+        city: item.city,
         dob: item.dob,
         email: item.email,
-        phone: item.phonenumber,
+        phone: item.phoneNumber,
         address: item.address,
         salary: item.salary,
-        joiningDate: item.joiningdate,
+        joiningDate: item.joiningDate,
       });
       setViewType("employee");
     } else {
       // it's a survey
+      markAsTouched(item.id);
       setVisitorFormData({
         employeeId: item.employeeId ?? "",
-        visitorType: item.serviceType
-          ? (item.serviceType.split(",") as VisitorType[])
+        visitorType: item.visitorType
+          ? (item.visitorType.split(",") as VisitorType[])
           : [],
         description: item.description ?? "",
         vendorName: item.vendorName ?? "",
@@ -282,10 +246,10 @@ function EmployeeDashboard() {
         contact2: item.contact2 ?? "",
         address: item.address ?? "",
         pincode: item.pincode ?? "",
-        constructionMaterials: item.materialName
-          ? (item.materialName.split(",") as ConstructionMaterial[])
+        constructionMaterials: item.constructionMaterials
+          ? (item.constructionMaterials.split(",") as ConstructionMaterial[])
           : [],
-        shopStatus: (item.shopType as ShopStatus) ?? undefined,
+        shopStatus: (item.shopStatus as ShopStatus) ?? undefined,
         hasVisitingCard: !!item.visitingCardUrl,
         visitingCard: undefined,
       });
@@ -312,20 +276,20 @@ function EmployeeDashboard() {
       render: (row) => (
         <div>
           <button
-            className="btn btn-sm btn-primary me-4 mb-2"
+            className="btn btn-sm btn-primary me-2 mb-2"
             onClick={() => handleView(row)}
           >
             View
           </button>
           <button
-            className="btn btn-sm btn-primary me-4 mb-2"
+            className="btn btn-sm btn-primary me-2 mb-2"
             onClick={() => handleEdit(row)}
           >
             Edit
           </button>
           <button
             className="btn btn-sm btn-danger"
-            onClick={() => handleDelete(row)}
+            onClick={() => deleteEmployee({id:row?.id})}
           >
             Delete
           </button>
@@ -335,24 +299,86 @@ function EmployeeDashboard() {
   ];
 
   const surveyColumns: Column<Survey & { actions?: any }>[] = [
-    { key: "employeeId", title: "Employee ID", sortable: true },
+    {
+      key: "employeeId",
+      title: "Employee ID",
+      sortable: true,
+      render: (row) => {
+        const isNew =
+          moment().diff(moment(row.createdAt), "hours") <= 72 &&
+          !touchedSurveyIds.includes(row.id);
+    
+        return (
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <span>{row.employeeId}</span>
+            {userProfile?.isAdmin === "true" && isNew && (
+              <span
+                style={{
+                  backgroundColor: "#28a745",
+                  color: "#fff",
+                  padding: "2px 8px",
+                  borderRadius: "10px",
+                  fontSize: "10px",
+                  fontWeight: "bold",
+                }}
+              >
+                NEW
+              </span>
+            )}
+          </div>
+        );
+      },
+    }
+    ,
     { key: "ownerName", title: "Owner Name", sortable: true },
-    { key: "serviceType", title: "Service Type" },
-    { key: "materialName", title: "Material Name" },
+    { key: "visitorType", title: "Visitor Type" },
+    { key: "constructionMaterials", title: "Material Name" },
     { key: "description", title: "Description" },
     { key: "contact1", title: "Contact" },
     { key: "contact2", title: "Alt. Contact" },
-    { key: "visitingCardUrl", title: "Visiting Card" },
+    {
+      key: "visitingCardUrl",
+      title: "Visiting Card",
+      render: (row) => (
+        row.visitingCardUrl ? (
+          <img
+            src={String(row.visitingCardUrl)}
+            alt="Visiting Card"
+            style={{ width: "100px", height: "auto", objectFit: "cover", cursor: "pointer" }}
+            onClick={() => setSelectedImage(typeof row.visitingCardUrl === 'string' ? row.visitingCardUrl : null)}
+          />
+        ) : (
+          "No Image"
+        )
+      ),
+    },
     { key: "pincode", title: "Pincode" },
     { key: "address", title: "Address" },
+    { key: "createdAt", title: "Created At" },
+
     {
       key: "actions",
       title: "Actions",
       render: (row) => (
         <div>
-          <button className="btn btn-sm btn-primary me-2 mb-2" onClick={() => handleView(row)}>View</button>
-          <button className="btn btn-sm btn-primary me-2 mb-2" onClick={() => handleEditVisitor(row)}>Edit</button>
-          <button className="btn btn-sm btn-danger" onClick={() => handleDeleteVisitor(row)}>Delete</button>
+           <button
+            className="btn btn-sm btn-primary me-2 mb-2"
+            onClick={() => handleView(row)}
+          >
+            View
+          </button>
+          <button
+            className="btn btn-sm btn-primary me-2 mb-2"
+            onClick={() => handleEditVisitor(row)}
+          >
+            Edit
+          </button>
+          <button
+            className="btn btn-sm btn-danger"
+            onClick={() => deleteSurvey({surveyId:row?.id})}
+          >
+            Delete
+          </button>
         </div>
       ),
     },
@@ -382,10 +408,8 @@ function EmployeeDashboard() {
       );
     }
   }, [showEmployeeDetailsModal.status]);
-  const sortedSurveys = filteredSurveys?.slice()?.reverse();
-  const sortedEmployees = employees?.slice()?.reverse();
   const modalRef = useRef<HTMLDivElement | null>(null);
-  const surveyData = sortedSurveys?.map((survey) => ({
+  const surveyData = filteredSurveys?.map((survey) => ({
       ...survey,
       actions: (
         <div>
@@ -403,12 +427,11 @@ function EmployeeDashboard() {
         </div>
       ),
     }));
-  console.log("sortedEmployees", sortedEmployees);
 
-  const employeeData: Employee[] = (sortedEmployees ?? [])
+  const employeeData: Employee[] = (employees ?? [])
     .filter((emp): emp is Employee => !!emp)
     .map((emp) => ({
-      empId: emp.id,
+      id: emp.id,
       fullName: emp.fullName || "N/A",
       dob: emp.dob || "N/A",
       position: emp.position || "N/A",
@@ -425,7 +448,6 @@ function EmployeeDashboard() {
         ? moment(emp.createdAt).format("dddd, D MMMM [at] h:mm A")
         : "N/A",
     }));
-  console.log("employeeData", formData);
 
   return (
     <div>
@@ -543,6 +565,8 @@ function EmployeeDashboard() {
                   setFormData={setFormData}
                   showModal={showEmployeeModal}
                   setShowModal={setShowEmployeeModal}
+                  isEditMode={isEditMode}
+                  setIsEditMode={setIsEditMode}
                 />
                 <GenericTable
                   columns={userColumns}
@@ -652,6 +676,34 @@ function EmployeeDashboard() {
           </div>
         </div>
       </div>
+      {selectedImage && (
+        <div
+          onClick={() => setSelectedImage(null)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.7)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+        >
+          <img
+            src={selectedImage}
+            alt="Full Visiting Card"
+            style={{
+              maxWidth: "90%",
+              maxHeight: "90%",
+              borderRadius: 8,
+              boxShadow: "0 0 10px #fff",
+            }}
+          />
+        </div>
+      )}
       <Footer />
     </div>
   );
