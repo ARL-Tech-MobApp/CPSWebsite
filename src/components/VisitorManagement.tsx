@@ -9,11 +9,15 @@ import {
   Accordion,
   ListGroup,
   Badge,
+  OverlayTrigger,
+  Popover,
 } from "react-bootstrap";
 import { BsUpload, BsCheckCircle, BsArrowLeft } from "react-icons/bs";
 import { useSurveyStore } from "../stores/surveyStore";
 import { useAuthStore } from "../stores/useAuthStore";
 import axios from "axios";
+import { InfoCircle } from "react-bootstrap-icons";
+
 
 const UploadIcon = BsUpload as unknown as React.FC;
 const CheckIcon = BsCheckCircle as unknown as React.FC;
@@ -336,14 +340,29 @@ const VisitorManagement: React.FC<Props> = ({
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Check
-          type="checkbox"
-          id="has-visiting-card"
-          label="Has Visiting Card"
-          name="hasVisitingCard"
-          checked={formData.hasVisitingCard}
-          onChange={handleInputChange}
-        />
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Form.Check
+            type="checkbox"
+            id="has-visiting-card"
+            label="Has Visiting Card"
+            name="hasVisitingCard"
+            checked={formData.hasVisitingCard}
+            onChange={handleInputChange}
+          />
+          <OverlayTrigger
+            trigger="click"
+            placement="right"
+            overlay={
+              <Popover id="info-popover">
+                <Popover.Body>
+                If you have a visiting card, please upload its photo and include some details about it in the description field. If not, please fill in all the information manually.                </Popover.Body>
+              </Popover>
+            }
+            rootClose
+          >
+            <InfoCircle style={{ cursor: "pointer", marginLeft: "8px" }} />
+          </OverlayTrigger>
+        </div>
       </Form.Group>
     </>
   );
