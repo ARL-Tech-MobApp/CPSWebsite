@@ -98,7 +98,7 @@ export default function ViewShow({
                       <strong>Owner Name:</strong> {visitorFormData.ownerName}
                     </li>
                     <li>
-                      <strong>Service Types:</strong>{" "}
+                      <strong>Visitor Types:</strong>{" "}
                       {visitorFormData.visitorType?.join(", ")}
                     </li>
                     <li>
