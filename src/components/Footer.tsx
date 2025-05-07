@@ -117,7 +117,7 @@ const Footer: React.FC = () => {
               {/* {!accessToken && ( */}
               <Link to="/employee-portals">
                 <Button variant="primary" className="mt-3">
-                  Access Employee Tools
+                  Employee LogIn
                 </Button>
               </Link>
               {/* )} */}

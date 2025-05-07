@@ -59,6 +59,10 @@ const Header: React.FC = () => {
               <Nav.Link as={Link} to="/contact">
                 Contact
               </Nav.Link>
+              <Nav.Link as={Link} to="/employee-portals">
+                Employee LogIn
+              </Nav.Link>
+              
               {accessToken && (
                 <Button
                   onClick={async () => {
