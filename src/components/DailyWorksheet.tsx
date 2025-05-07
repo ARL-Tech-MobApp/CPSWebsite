@@ -8,6 +8,7 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { useAuthStore } from "../stores/useAuthStore";
+import moment from "moment";
 
 interface Worksheet {
   id: string;
@@ -60,7 +61,14 @@ const DailyWorksheetApp: React.FC = () => {
       );
       if (!response.ok) throw new Error("Failed to fetch worksheets");
       const data = await response.json();
-      setWorksheets(data.worksheets || []);
+      const worksheets = data.worksheets || [];
+  
+      // ✅ Sort by time (newest first)
+      const sortedWorksheets = worksheets.sort((a: { time: moment.MomentInput; }, b: { time: moment.MomentInput; }) =>
+        moment(b.time).valueOf() - moment(a.time).valueOf()
+      );
+  
+      setWorksheets(sortedWorksheets);
     } catch (err) {
       console.error("Error fetching worksheets:", err);
       setError("Failed to load worksheets. Please try again.");

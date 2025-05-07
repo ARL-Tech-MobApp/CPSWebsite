@@ -72,7 +72,14 @@ function EmployeeDashboard() {
   const [showVisitorModal, setShowVisitorModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewType, setViewType] = useState<"employee" | "survey" | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [touchedSurveyIds, setTouchedSurveyIds] = useState<string[]>([]);
 
+  const markAsTouched = (id: string) => {
+    setTouchedSurveyIds((prev) => Array.from(new Set([...prev, id])));
+  };
+  
   const profileFields = [
     { label: "Full Name", value: userProfile?.fullName },
     { label: "Position", value: userProfile?.position },
@@ -204,9 +211,8 @@ function EmployeeDashboard() {
   };
   
 
-  console.log("formvisitordata", visitorFormData);
-
   const handleEditVisitor = (survey: Survey) => {
+    markAsTouched(survey.id);
     setVisitorFormData({
       employeeId: survey.employeeId ?? "",
       visitorType: survey.visitorType
@@ -270,6 +276,7 @@ function EmployeeDashboard() {
       setViewType("employee");
     } else {
       // it's a survey
+      markAsTouched(item.id);
       setVisitorFormData({
         employeeId: item.employeeId ?? "",
         visitorType: item.visitorType
@@ -335,7 +342,37 @@ function EmployeeDashboard() {
   ];
 
   const surveyColumns: Column<Survey & { actions?: any }>[] = [
-    { key: "employeeId", title: "Employee ID", sortable: true },
+    {
+      key: "employeeId",
+      title: "Employee ID",
+      sortable: true,
+      render: (row) => {
+        const isNew =
+          moment().diff(moment(row.createdAt), "hours") <= 72 &&
+          !touchedSurveyIds.includes(row.id);
+    
+        return (
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <span>{row.employeeId}</span>
+            {isNew && (
+              <span
+                style={{
+                  backgroundColor: "#28a745",
+                  color: "#fff",
+                  padding: "2px 8px",
+                  borderRadius: "10px",
+                  fontSize: "10px",
+                  fontWeight: "bold",
+                }}
+              >
+                NEW
+              </span>
+            )}
+          </div>
+        );
+      },
+    }
+    ,
     { key: "ownerName", title: "Owner Name", sortable: true },
     { key: "visitorType", title: "Visitor Type" },
     { key: "constructionMaterials", title: "Material Name" },
@@ -350,7 +387,8 @@ function EmployeeDashboard() {
           <img
             src={String(row.visitingCardUrl)}
             alt="Visiting Card"
-            style={{ width: "100px", height: "auto", objectFit: "cover" }}
+            style={{ width: "100px", height: "auto", objectFit: "cover", cursor: "pointer" }}
+            onClick={() => setSelectedImage(typeof row.visitingCardUrl === 'string' ? row.visitingCardUrl : null)}
           />
         ) : (
           "No Image"
@@ -359,6 +397,8 @@ function EmployeeDashboard() {
     },
     { key: "pincode", title: "Pincode" },
     { key: "address", title: "Address" },
+    { key: "createdAt", title: "Created At" },
+
     {
       key: "actions",
       title: "Actions",
@@ -418,7 +458,6 @@ function EmployeeDashboard() {
         </div>
       ),
     }));
-  console.log("sortedEmployees", sortedEmployees);
 
   const employeeData: Employee[] = (sortedEmployees ?? [])
     .filter((emp): emp is Employee => !!emp)
