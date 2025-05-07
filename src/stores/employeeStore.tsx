@@ -3,16 +3,17 @@ import axios from 'axios';
 
 interface Employee {
   id?: string;
+  empId?: string;
   fullName: string;
   dob: string;
   position: string;
   department: string;
   email: string;
-  phonenumber: string;
+  phoneNumber: string;
   address: string;
-  joiningdate: string;
+  joiningDate: string;
   salary: string;
-  cities: string[];
+  city: string;
 }
 
 interface EmployeeState {

@@ -28,8 +28,16 @@ const Header: React.FC = () => {
                 style={{ objectFit: "contain" }}
               />
               <div className="d-flex flex-column justify-content-center">
-                <h1 className="sitename m-0  fw-bold ">
-                  {accessToken ? `Hi ${userProfile?.fullName}` : "CPS Pvt Ltd"}
+                <h1 className="sitename m-0 fw-bold">
+                  {accessToken ? (
+                    <>
+                    <span className="d-none d-md-inline">
+                      <span className="fw-bold fs-3">Hi {userProfile?.fullName}</span>, <span className="fw-normal fs-5">Welcome To CPS</span>
+                    </span>
+                    </>
+                  ) : (
+                  "CPS Pvt Ltd"
+                  )}
                 </h1>
                 {/* <h2 className="sitename-sub m-0 fw-semibold">Services Pvt Ltd</h2> */}
               </div>

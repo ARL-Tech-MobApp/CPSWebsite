@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import GenericTable, { Column } from "../components/GenericTable";
 import VisitorManagement from "../components/VisitorManagement";
 import Header from "../components/Navbar";
@@ -11,8 +11,11 @@ import { useAuthStore } from "../stores/useAuthStore";
 import { Console } from "console";
 import ViewShow from "../components/ViewShow";
 import moment from "moment";
+import DailyWorksheet from "../components/DailyWorksheet";
+
 interface EmployeeFormData {
   id?: string; // Optional for new employees
+  empId?: string; // Added employeeId to match the required type
   fullName: string;
   position: string;
   department: string;
@@ -30,11 +33,10 @@ type VisitorType =
   | "mixture_machine"
   | "construction_material"
   | "cement steel store"
-  |"local supplier"
-  |"marbal & tile store"
-  |"concrete product"
-  | "other"
-  ;
+  | "local supplier"
+  | "marbal & tile store"
+  | "concrete product"
+  | "other";
 type ConstructionMaterial = "sand" | "bricks" | "cement" | "steel";
 type ShopStatus = "with_shop" | "without_shop";
 
@@ -62,19 +64,59 @@ function EmployeeDashboard() {
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewType, setViewType] = useState<"employee" | "survey" | null>(null);
 
+  const profileFields = [
+    { label: "Full Name", value: userProfile?.fullName },
+    { label: "Position", value: userProfile?.position },
+    { label: "Department", value: userProfile?.department },
+    // { label: "City", value: userProfile?.city },
+    // { label: "Date of Birth", value: userProfile?.dob },
+    // { label: "Email", value: userProfile?.email || "N/A" },
+    // { label: "Phone", value: userProfile?.phoneNumber },
+    // { label: "Address", value: userProfile?.address },
+    // { label: "Joining Date", value: userProfile?.joiningDate },
+    // { label: "Salary", value: `$${userProfile?.salary.toLocaleString()}` },
+    // {
+    //   label: "Created At",
+    //   value: new Date(userProfile?.createdAt).toLocaleString(),
+    // },
+  ];
+
+  const [expanded, setExpanded] = useState(false);
+  interface EmployeeDetails {
+    fullName?: string;
+    email?: string;
+    department?: string;
+    position?: string;
+    phoneNumber?: string;
+    city?: string;
+  }
+  
+  const [showEmployeeDetailsModal, setShowEmployeeDetailsModal] = useState<{
+    details: EmployeeDetails;
+    status: boolean;
+  }>({
+    details: {},
+    status: false,
+  });
+  const visibleFields = expanded ? profileFields : profileFields.slice(0, 2);
+
   const [formData, setFormData] = useState<EmployeeFormData>({
     fullName: "",
+    empId: "",
     position: "",
     department: "",
     dob: "",
     email: "",
-    joiningDate: new Date().toISOString().split("T")[0], // Default to today's date
+    joiningDate: new Date().toISOString().split("T")[0],
+    phone: "",
+    address: "",
+    salary: "",
+    cities: [],
   });
   const [visitorFormData, setVisitorFormData] = useState<VisitFormData>({
-      visitorType: [],
-      hasVisitingCard: false,
-    });
-
+    visitorType: [],
+    hasVisitingCard: false,
+  });
 
   type Employee = {
     id?: string;
@@ -82,28 +124,27 @@ function EmployeeDashboard() {
     dob: string;
     position: string;
     department: string;
-    phonenumber: string;
+    phoneNumber: string;
     address: string;
-    joiningdate: string;
+    joiningDate: string;
     salary: string;
     email: string;
     createdAt: string;
-    cities: string[];
+    city: string;
   };
-  
 
   const { employees, fetchEmployees } = useEmployeeStore();
-  const { surveys, surveyloading, fetchSurveys,lastKey } = useSurveyStore();
+  const { surveys, surveyloading, fetchSurveys, lastKey } = useSurveyStore();
   console.log("surveys", surveys);
   useEffect(() => {
     // Fetch the first batch of data
-    fetchSurveys("2");
+    fetchSurveys();
   }, [fetchSurveys]);
 
-  const handleLoadMore = () => {
-    if (!lastKey) return; // No more data to fetch
-    fetchSurveys("2", lastKey);
-  };
+  // const handleLoadMore = () => {
+  //   if (!lastKey) return; // No more data to fetch
+  //   fetchSurveys("2", lastKey);
+  // };
 
   useEffect(() => {
     fetchEmployees();
@@ -111,16 +152,16 @@ function EmployeeDashboard() {
 
   const handleEdit = (employee: Employee) => {
     setFormData({
-      id: employee.id,
+      empId: employee.id,
       fullName: employee.fullName,
       position: employee.position,
       department: employee.department,
       dob: employee.dob,
       email: employee.email,
-      phone: employee.phonenumber,
+      phone: employee.phoneNumber,
       address: employee.address,
       salary: employee.salary,
-      joiningDate: employee.joiningdate, // Use the existing joining date if available
+      joiningDate: employee.joiningDate, // Use the existing joining date if available
     });
     setShowEmployeeModal(true);
   };
@@ -128,9 +169,15 @@ function EmployeeDashboard() {
     if (window.confirm("Are you sure you want to delete this employee?")) {
       try {
         const response = await fetch(
-            `https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/delete-employee?employeeId=${employee.id}`,
+          "https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/delete-employee",
           {
             method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id: employee.id,
+            }),
           }
         );
   
@@ -138,7 +185,7 @@ function EmployeeDashboard() {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
   
-        await fetchEmployees();
+        await fetchEmployees(); // Refresh the employee list
         alert("Employee deleted successfully.");
       } catch (error) {
         console.error("Error deleting employee:", error);
@@ -146,13 +193,16 @@ function EmployeeDashboard() {
       }
     }
   };
+  
 
-console.log("formvisitordata", visitorFormData)
+  console.log("formvisitordata", visitorFormData);
 
   const handleEditVisitor = (survey: Survey) => {
     setVisitorFormData({
       employeeId: survey.employeeId ?? "",
-      visitorType: survey.serviceType ? survey.serviceType.split(",") as VisitorType[] : [],
+      visitorType: survey.serviceType
+        ? (survey.serviceType.split(",") as VisitorType[])
+        : [],
       description: survey.description ?? "",
       vendorName: survey.vendorName ?? "",
       ownerName: survey.ownerName ?? "",
@@ -160,15 +210,16 @@ console.log("formvisitordata", visitorFormData)
       contact2: survey.contact2 ?? "",
       address: survey.address ?? "",
       pincode: survey.pincode ?? "",
-      constructionMaterials: survey.materialName ? survey.materialName.split(",") as ConstructionMaterial[] : [],
-      shopStatus: survey.shopType as ShopStatus ?? undefined,
+      constructionMaterials: survey.materialName
+        ? (survey.materialName.split(",") as ConstructionMaterial[])
+        : [],
+      shopStatus: (survey.shopType as ShopStatus) ?? undefined,
       hasVisitingCard: !!survey.visitingCardUrl,
       visitingCard: undefined, // Visiting card file can't be restored from URL
     });
     setShowVisitorModal(true);
   };
 
-  
   const handleDeleteVisitor = async (survey: Survey) => {
     if (window.confirm("Are you sure you want to delete this visitor?")) {
       try {
@@ -178,11 +229,11 @@ console.log("formvisitordata", visitorFormData)
             method: "DELETE",
           }
         );
-  
+
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-  
+
         await fetchEmployees();
         alert("visitor deleted successfully.");
       } catch (error) {
@@ -191,12 +242,12 @@ console.log("formvisitordata", visitorFormData)
       }
     }
   };
-  
+
   const handleView = (item: any) => {
     if ("fullName" in item) {
       // it's an employee
       setFormData({
-        id: item.id,
+        empId: item.id,
         fullName: item.fullName,
         position: item.position,
         department: item.department,
@@ -212,7 +263,9 @@ console.log("formvisitordata", visitorFormData)
       // it's a survey
       setVisitorFormData({
         employeeId: item.employeeId ?? "",
-        visitorType: item.serviceType ? item.serviceType.split(",") as VisitorType[] : [],
+        visitorType: item.serviceType
+          ? (item.serviceType.split(",") as VisitorType[])
+          : [],
         description: item.description ?? "",
         vendorName: item.vendorName ?? "",
         ownerName: item.ownerName ?? "",
@@ -220,8 +273,10 @@ console.log("formvisitordata", visitorFormData)
         contact2: item.contact2 ?? "",
         address: item.address ?? "",
         pincode: item.pincode ?? "",
-        constructionMaterials: item.materialName ? item.materialName.split(",") as ConstructionMaterial[] : [],
-        shopStatus: item.shopType as ShopStatus ?? undefined,
+        constructionMaterials: item.materialName
+          ? (item.materialName.split(",") as ConstructionMaterial[])
+          : [],
+        shopStatus: (item.shopType as ShopStatus) ?? undefined,
         hasVisitingCard: !!item.visitingCardUrl,
         visitingCard: undefined,
       });
@@ -229,14 +284,13 @@ console.log("formvisitordata", visitorFormData)
     }
     setShowViewModal(true);
   };
-  
 
-  const userColumns: Column<Employee& { actions?: any }>[]= [
+  const userColumns: Column<Employee & { actions?: any }>[] = [
     { key: "id", title: "ID", sortable: true },
     { key: "fullName", title: "Name", sortable: true },
     { key: "dob", title: "D.O.B", sortable: true },
-    { key: "phonenumber", title: "Phone Number" },
-    { key: "joiningdate", title: "Joining Date" },
+    { key: "phoneNumber", title: "Phone Number" },
+    { key: "joiningDate", title: "Joining Date" },
     { key: "salary", title: "Salary" },
     { key: "position", title: "Position" },
     { key: "department", title: "Department" },
@@ -248,15 +302,30 @@ console.log("formvisitordata", visitorFormData)
       title: "Actions",
       render: (row) => (
         <div>
-          <button className="btn btn-sm btn-primary me-2" onClick={() => handleView(row)}>view</button>
-          <button className="btn btn-sm btn-primary me-2" onClick={() => handleEdit(row)}>Edit</button>
-          <button className="btn btn-sm btn-danger" onClick={() => handleDelete(row)}>Delete</button>
+          <button
+            className="btn btn-sm btn-primary me-2"
+            onClick={() => handleView(row)}
+          >
+            view
+          </button>
+          <button
+            className="btn btn-sm btn-primary me-2"
+            onClick={() => handleEdit(row)}
+          >
+            Edit
+          </button>
+          <button
+            className="btn btn-sm btn-danger"
+            onClick={() => handleDelete(row)}
+          >
+            Delete
+          </button>
         </div>
       ),
     },
   ];
 
-  const surveyColumns: Column<Survey& { actions?: any }>[] = [
+  const surveyColumns: Column<Survey & { actions?: any }>[] = [
     { key: "employeeId", title: "Employee ID", sortable: true },
     { key: "ownerName", title: "Owner Name", sortable: true },
     { key: "serviceType", title: "Service Type" },
@@ -272,34 +341,70 @@ console.log("formvisitordata", visitorFormData)
       title: "Actions",
       render: (row) => (
         <div>
-          <button className="btn btn-sm btn-primary me-2" onClick={() => handleView(row)}>view</button>
-
-          <button className="btn btn-sm btn-primary me-2" onClick={() => handleEditVisitor(row)}>Edit</button>
-          <button className="btn btn-sm btn-danger" onClick={() => handleDeleteVisitor(row)}>Delete</button>
+          <button
+            className="btn btn-sm btn-primary me-2"
+            onClick={() => handleEditVisitor(row)}
+          >
+            Edit
+          </button>
+          <button
+            className="btn btn-sm btn-danger"
+            onClick={() => handleDeleteVisitor(row)}
+          >
+            Delete
+          </button>
         </div>
       ),
     },
   ];
 
-// If surveys have an ARRAY of employeeIds (e.g., item.employeeIds):
-const filteredSurveys = userProfile?.isAdmin==="true"
-  ? surveys  // Show all surveys if admin (boolean check)
-  : surveys?.filter((item) => {
-      const employeeId = item?.employeeId?.toLowerCase()?.trim() || '';
-      const userId = userProfile?.id?.toLowerCase()?.trim() || '';
-      return employeeId === userId;
-    }) || [];
+  // If surveys have an ARRAY of employeeIds (e.g., item.employeeIds):
+  const filteredSurveys =
+    userProfile?.isAdmin === "true"
+      ? surveys // Show all surveys if admin (boolean check)
+      : surveys?.filter((item) => {
+          const employeeId = item?.employeeId?.toLowerCase()?.trim() || "";
+          const userId = userProfile?.id?.toLowerCase()?.trim() || "";
+          return employeeId === userId;
+        }) || [];
+  useEffect(() => {
+    if (showEmployeeDetailsModal.status && modalRef.current) {
+      const modalInstance = new window.bootstrap.Modal(modalRef.current);
+      modalInstance.show();
 
+      // Optional: Reset state when modal is closed
+      modalRef.current.addEventListener(
+        "hidden.bs.modal",
+        () => {
+          setShowEmployeeDetailsModal({ status: false, details: {} });
+        },
+        { once: true }
+      );
+    }
+  }, [showEmployeeDetailsModal.status]);
   const sortedSurveys = filteredSurveys?.slice()?.reverse();
   const sortedEmployees = employees?.slice()?.reverse();
-
-  
-
+  const modalRef = useRef<HTMLDivElement | null>(null);
   const surveyData = sortedSurveys?.map((survey) => ({
-    employeeId: survey?.employeeId ?? "None",
+    employeeId: (
+      <div>
+        {survey?.employeeId}
+        <Button
+          onClick={() =>
+            setShowEmployeeDetailsModal({
+              details: survey?.employee,
+              status: true,
+            })
+          }
+          className="btn btn-sm btn-primary"
+        >
+          Show Details
+        </Button>
+      </div>
+    ),
     ownerName: survey?.ownerName ?? "None",
     serviceType: survey?.serviceType ?? "None",
-    materialName: survey?.materialName ?? "None",
+    materialName: survey?.constructionMaterials ?? "None",
     description: survey?.description ?? "None",
     contact1: survey?.contact1 ?? "None",
     contact2: survey?.contact2 ?? "None",
@@ -316,34 +421,57 @@ const filteredSurveys = userProfile?.isAdmin==="true"
     pincode: survey?.pincode ?? "None",
     address: survey?.address ?? "None",
   }));
-console.log("sortedEmployees", sortedEmployees);
+  console.log("sortedEmployees", sortedEmployees);
 
-
-const employeeData: Employee[] = (sortedEmployees ?? [])
-  .filter((emp): emp is Employee => !!emp)
-  .map((emp) => ({
-    id: emp.id,
-    fullName: emp.fullName || "N/A",
-    dob: emp.dob || "N/A",
-    position: emp.position || "N/A",
-    department: emp.department || "N/A",
-    email: emp.email || "N/A",
-    phonenumber: emp.phonenumber || "N/A",
-    address: emp.address || "N/A",
-    cities: emp.cities || ["N/A"],
-    joiningdate: emp.joiningdate
-  ? moment(emp.joiningdate).format("dddd, D MMMM [at] h:mm A")
-  : "N/A",
-    salary: emp.salary || "N/A",
-    createdAt: emp.createdAt
-  ? moment(emp.createdAt).format("dddd, D MMMM [at] h:mm A")
-  : "N/A",
-  }));
-console.log("employeeData", formData);
+  const employeeData: Employee[] = (sortedEmployees ?? [])
+    .filter((emp): emp is Employee => !!emp)
+    .map((emp) => ({
+      empId: emp.id,
+      fullName: emp.fullName || "N/A",
+      dob: emp.dob || "N/A",
+      position: emp.position || "N/A",
+      department: emp.department || "N/A",
+      email: emp.email || "N/A",
+      phoneNumber: emp.phoneNumber || "N/A",
+      address: emp.address || "N/A",
+      city: emp.city || "N/A",
+      joiningDate: emp.joiningDate
+        ? moment(emp.joiningDate).format("dddd, D MMMM [at] h:mm A")
+        : "N/A",
+      salary: emp.salary || "N/A",
+      createdAt: emp.createdAt
+        ? moment(emp.createdAt).format("dddd, D MMMM [at] h:mm A")
+        : "N/A",
+    }));
+  console.log("employeeData", formData);
 
   return (
     <div>
       <Header />
+      {/* profile */}
+      <div className="container mt-4">
+        <div className="card shadow shadow-sm rounded-4 p-4">
+          <h3 className="mb-4 text-primary fw-bold text-center text-md-start">
+            Profile Overview
+          </h3>
+          <div className="row">
+            {visibleFields.map(({ label, value }) => (
+              <div className="col-12 col-md-6 mb-3" key={label}>
+                <strong>{label}:</strong> {value}
+              </div>
+            ))}
+          </div>
+
+          <div className="text-end">
+            <button
+              className="btn btn-outline-primary btn-sm"
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? "Hide Details" : "See More"}
+            </button>
+          </div>
+        </div>
+      </div>
       <div className="container my-5">
         <nav className="my-3">
           <div className="nav nav-tabs" id="nav-tab" role="tablist">
@@ -373,20 +501,46 @@ console.log("employeeData", formData);
                 >
                   Survey Details
                 </button>
+                <button
+                  className="nav-link"
+                  id="nav-worksheet-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-worksheet"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-worksheet"
+                  aria-selected="true"
+                >
+                  WorkSheet
+                </button>
               </>
             ) : (
-              <button
-                className="nav-link active"
-                id="nav-profile-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#nav-profile"
-                type="button"
-                role="tab"
-                aria-controls="nav-profile"
-                aria-selected="true"
-              >
-                Survey Details
-              </button>
+              <>
+                <button
+                  className="nav-link active"
+                  id="nav-profile-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-profile"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-profile"
+                  aria-selected="true"
+                >
+                  Survey Details
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-worksheet-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-worksheet"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-worksheet"
+                  aria-selected="true"
+                >
+                  WorkSheet
+                </button>
+              </>
             )}
           </div>
         </nav>
@@ -402,7 +556,12 @@ console.log("employeeData", formData);
           >
             {userProfile?.isAdmin === "true" && (
               <>
-                <EmployeeManagement formData={formData} setFormData={setFormData}  showModal={showEmployeeModal} setShowModal={setShowEmployeeModal} />
+                <EmployeeManagement
+                  formData={formData}
+                  setFormData={setFormData}
+                  showModal={showEmployeeModal}
+                  setShowModal={setShowEmployeeModal}
+                />
                 <GenericTable
                   columns={userColumns}
                   heading="Employee Details"
@@ -423,7 +582,12 @@ console.log("employeeData", formData);
             role="tabpanel"
             aria-labelledby="nav-profile-tab"
           >
-            <VisitorManagement formData={visitorFormData} setFormData={setVisitorFormData} showModal={showVisitorModal} setShowModal={setShowVisitorModal} />
+            <VisitorManagement
+              formData={visitorFormData}
+              setFormData={setVisitorFormData}
+              showModal={showVisitorModal}
+              setShowModal={setShowVisitorModal}
+            />
             <GenericTable
               columns={surveyColumns}
               heading="Survey Details"
@@ -431,13 +595,81 @@ console.log("employeeData", formData);
               themeColor="#007bff"
               onSelectionChange={() => {}}
               data={surveyData}
-              fetch={(lastKey) => fetchSurveys("2", lastKey)}  // Pass a function, not the result
+              fetch={(lastKey) => fetchSurveys("2", lastKey)} // Pass a function, not the result
               lastkey={lastKey}
             />
           </div>
+          <div
+            className={"tab-pane fade"}
+            id="nav-worksheet"
+            role="tabpanel"
+            aria-labelledby="nav-worksheet-tab"
+          >
+            <DailyWorksheet/>
+          </div>
         </div>
       </div>
-      <ViewShow showViewModal={showViewModal} setShowViewModal={setShowViewModal} formData={formData} visitorFormData={visitorFormData} viewType={viewType}/>
+      <ViewShow
+        showViewModal={showViewModal}
+        setShowViewModal={setShowViewModal}
+        formData={formData}
+        visitorFormData={visitorFormData}
+        viewType={viewType}
+      />
+      <div
+        className="modal fade"
+        id="employeeDetailsModal"
+        tabIndex="-1"
+        aria-hidden="true"
+        ref={modalRef}
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Employee Details</h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              {showEmployeeDetailsModal.details ? (
+                <>
+                  <p>
+                    <strong>Name:</strong>{" "}
+                    {showEmployeeDetailsModal.details.fullName}
+                  </p>
+                  <p>
+                    <strong>Email:</strong>{" "}
+                    {showEmployeeDetailsModal.details.email}
+                  </p>
+                  <p>
+                    <strong>Dept:</strong>{" "}
+                    {showEmployeeDetailsModal.details.department}
+                  </p>
+                  <p>
+                    <strong>Position:</strong>{" "}
+                    {showEmployeeDetailsModal.details.position}
+                  </p>
+                  <p>
+                    <strong>PhoneNumber:</strong>{" "}
+                    {showEmployeeDetailsModal.details.phoneNumber ?? "None"}
+                  </p>
+                  <p>
+                    <strong>City:</strong>{" "}
+                    {showEmployeeDetailsModal.details.city ?? "None"}
+                  </p>
+                  {/* Add more fields as needed */}
+                </>
+              ) : (
+                <p>No details available.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
       <Footer />
     </div>
   );

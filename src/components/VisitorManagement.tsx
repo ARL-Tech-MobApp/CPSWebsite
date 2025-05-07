@@ -24,12 +24,11 @@ type VisitorType =
   | "mixture_machine"
   | "construction_material"
   | "cement steel store"
-  |"local supplier"
-  |"marbal & tile store"
-  |"concrete product"
-  | "other"
-  ;
-  
+  | "local supplier"
+  | "marbal & tile store"
+  | "concrete product"
+  | "other";
+
 type ConstructionMaterial = "sand" | "bricks" | "cement" | "steel";
 type ShopStatus = "with_shop" | "without_shop";
 
@@ -37,7 +36,7 @@ interface VisitorFormData {
   employeeId?: string;
   visitorType: VisitorType[];
   hasVisitingCard: boolean;
-  visitingCard?: File | null ;
+  visitingCard?: File | null;
   description?: string;
   vendorName?: string;
   ownerName?: string;
@@ -58,17 +57,17 @@ interface Props {
 }
 
 const VisitorManagement: React.FC<Props> = ({
-    formData,
-    setFormData,
-    showModal,
-    setShowModal,
-  }) =>{
+  formData,
+  setFormData,
+  showModal,
+  setShowModal,
+}) => {
   const [showUploadProgress, setShowUploadProgress] = useState(false);
   const { fetchSurveys, addSurvey, surveyloading } = useSurveyStore();
   const { userProfile, profileLoading } = useAuthStore();
   const [formStep, setFormStep] = useState<number>(1);
   const [submittedData, setSubmittedData] = useState<VisitorFormData[]>([]);
-console.log("formDatahdfi", formData);
+  console.log("formDatahdfi", formData);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked, files } = e.target;
 
@@ -116,22 +115,13 @@ console.log("formDatahdfi", formData);
       }));
     }
   };
-    // Handle selecting WhatsApp number
-    const handleWhatsappChange = (contactNumber: string) => {
-      setFormData((prev) => ({
-        ...prev,
-        whatsappNumber: contactNumber,
-      }));
-    };
-  
-    // Check if the number starts with '1' or '2' for WhatsApp
-    const getWhatsappStyle = (contact: string) => {
-      if (contact && (contact.startsWith("1") || contact.startsWith("2")) && contact.length === 10) {
-        return { backgroundColor: "green", color: "white" }; // Apply green background if it's a WhatsApp number
-      }
-      return {};
-    };
-  
+  // Handle selecting WhatsApp number
+  const handleWhatsappChange = (contactNumber: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      whatsappNumber: contactNumber,
+    }));
+  };
 
   const validateForm = (): string | null => {
     if (formStep === 1) {
@@ -139,32 +129,33 @@ console.log("formDatahdfi", formData);
         return "Please select at least one visitor type.";
       }
     }
-  
+
     if (formStep === 2) {
       if (formData.hasVisitingCard && !formData.visitingCard) {
         return "Please upload a visiting card.";
       }
-       
-      if(!formData.hasVisitingCard){
-      if (!formData.vendorName?.trim()) return "Vendor name is required.";
-      if (!formData.ownerName?.trim()) return "Owner name is required.";
-      if (!formData.contact1?.trim()) return "Primary contact is required.";
-      if (!/^\d{10}$/.test(formData.contact1)) return "Enter valid 10-digit contact.";
-      if (formData.contact2 && !/^\d{10}$/.test(formData.contact2)) {
-        return "Enter valid 10-digit secondary contact.";
+
+      if (!formData.hasVisitingCard) {
+        if (!formData.vendorName?.trim()) return "Vendor name is required.";
+        if (!formData.ownerName?.trim()) return "Owner name is required.";
+        if (!formData.contact1?.trim()) return "Primary contact is required.";
+        if (!/^\d{10}$/.test(formData.contact1))
+          return "Enter valid 10-digit contact.";
+        if (formData.contact2 && !/^\d{10}$/.test(formData.contact2)) {
+          return "Enter valid 10-digit secondary contact.";
+        }
+        if (!formData.whatsappNumber) {
+          return "please select the check box for which is ur whtsappNumer.";
+        }
+        if (!formData.address?.trim()) return "Address is required.";
+        if (!formData.pincode?.trim()) return "Pincode is required.";
+        if (!/^\d{6}$/.test(formData.pincode))
+          return "Enter valid 6-digit pincode.";
+        if (!formData.description?.trim()) {
+          return "Description is required.";
+        }
       }
-      if (!formData.whatsappNumber) {
-        return "please select the check box for which is ur whtsappNumer.";
-      }
-      if (!formData.address?.trim()) return "Address is required.";
-      if (!formData.pincode?.trim()) return "Pincode is required.";
-      if (!/^\d{6}$/.test(formData.pincode)) return "Enter valid 6-digit pincode.";
-      if (!formData.description?.trim()) { 
-        return "Description is required.";
-      }
-    }
-    
-  
+
       if (
         formData.visitorType.includes("construction_material") &&
         (!formData.constructionMaterials ||
@@ -172,14 +163,16 @@ console.log("formDatahdfi", formData);
       ) {
         return "Please select at least one construction material.";
       }
-      if (formData.visitorType.includes("construction_material") && !formData.shopStatus) return "Please select a shop status.";
-
+      if (
+        formData.visitorType.includes("construction_material") &&
+        !formData.shopStatus
+      )
+        return "Please select a shop status.";
     }
 
-  
     return null;
   };
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errorMessage = validateForm();
@@ -193,12 +186,13 @@ console.log("formDatahdfi", formData);
       return;
     }
     setShowUploadProgress(true);
+    console.log("formData", formData);
     try {
       // Prepare survey data without the file
       const surveyData = {
         employeeId: userProfile?.id || "None",
-        serviceType: formData.visitorType.join(",") || "None",
-        description: formData.description|| "None",
+        visitorType: formData.visitorType.join(",") || "None",
+        description: formData.description || "None",
         vendorName: formData.vendorName || "None",
         ownerName: formData.ownerName || "None",
         contact1: formData.contact1 || "None",
@@ -206,8 +200,8 @@ console.log("formDatahdfi", formData);
         whatsappNumber: formData?.whatsappNumber || "None",
         address: formData.address || "None",
         pincode: formData.pincode || "None",
-        materialName: formData.constructionMaterials?.join(",")|| "None",
-        shopType: formData.shopStatus || "None",
+        constructionMaterials: formData.constructionMaterials?.join(",") || "None",
+        shopStatus: formData.shopStatus || "None",
         visitingCardFileName: formData.visitingCard?.name || undefined,
       };
 
@@ -241,7 +235,7 @@ console.log("formDatahdfi", formData);
       }
 
       // Refresh data and reset form
-      // await fetchSurveys();
+      await fetchSurveys();
       setFormData({
         visitorType: [],
         hasVisitingCard: false,
@@ -371,7 +365,7 @@ console.log("formDatahdfi", formData);
               onChange={handleInputChange}
             />
             <Form.Text muted>
-              Please upload a clear image or PDF of the visiting card 
+              Please upload a clear image or PDF of the visiting card
             </Form.Text>
           </Form.Group>
 
@@ -468,43 +462,46 @@ console.log("formDatahdfi", formData);
           </Row>
 
           <Row className="mb-3">
-        <Col md={6}>
-          <Form.Group>
-            <Form.Label>Contact Number 1</Form.Label>
-            <Form.Control
-              type="tel"
-              name="contact1"
-              value={formData.contact1 || ""}
-              onChange={handleInputChange}
-              required
-            />
-            <Form.Check
-              type="checkbox"
-              label="Set as WhatsApp Number"
-              checked={formData.whatsappNumber === formData.contact1}
-              onChange={() => handleWhatsappChange(formData.contact1 || "")}
-            />
-          </Form.Group>
-        </Col>
-        <Col md={6}>
-          <Form.Group>
-            <Form.Label>Contact Number 2 (Optional)</Form.Label>
-            <Form.Control
-              type="tel"
-              name="contact2"
-              value={formData.contact2 || ""}
-              onChange={handleInputChange}
-             
-            />
-            <Form.Check
-              type="checkbox"
-              label="Set as WhatsApp Number"
-              checked={formData.whatsappNumber === formData.contact2}
-              onChange={() => handleWhatsappChange(formData.contact2 || "")}
-            />
-          </Form.Group>
-        </Col>
-      </Row>
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label>Contact Number 1</Form.Label>
+                <Form.Control
+                  type="tel"
+                  name="contact1"
+                  value={formData.contact1 || ""}
+                  onChange={handleInputChange}
+                  required
+                />
+                <Form.Check
+                  type="radio"
+                  name="whatsappNumber"
+                  label="Set as WhatsApp Number"
+                  checked={formData.whatsappNumber === formData.contact1}
+                  onChange={() => handleWhatsappChange(formData.contact1 || "")}
+                  disabled={!formData.contact1}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label>Contact Number 2 (Optional)</Form.Label>
+                <Form.Control
+                  type="tel"
+                  name="contact2"
+                  value={formData.contact2 || ""}
+                  onChange={handleInputChange}
+                />
+                <Form.Check
+                  type="radio"
+                  name="whatsappNumber"
+                  label="Set as WhatsApp Number"
+                  checked={formData.whatsappNumber === formData.contact2}
+                  onChange={() => handleWhatsappChange(formData.contact2 || "")}
+                  disabled={!formData.contact2}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
           <Form.Group className="mb-3">
             <Form.Label>Address</Form.Label>
@@ -541,7 +538,7 @@ console.log("formDatahdfi", formData);
 
           {showConstructionMaterialOptions && (
             <>
-              <Form.Group className="mb-3">  
+              <Form.Group className="mb-3">
                 <Form.Label>Select Construction Materials</Form.Label>
                 <Row>
                   {["sand", "steel", "cement", "bricks", "crusher_metal"].map(
@@ -653,7 +650,8 @@ console.log("formDatahdfi", formData);
                 <strong>Contact Number 2:</strong> {formData?.contact2 || "N/A"}
               </li>
               <li className="list-group-item">
-                <strong>WhtsappNumber:</strong> {formData?.whatsappNumber || "N/A"}
+                <strong>WhtsappNumber:</strong>{" "}
+                {formData?.whatsappNumber || "N/A"}
               </li>
               <li className="list-group-item">
                 <strong>Address:</strong> {formData?.address}
@@ -684,15 +682,15 @@ console.log("formDatahdfi", formData);
 
   return (
     <>
-    {userProfile?.isAdmin === "true"?null: (
-      <Button
-        variant="primary"
-        onClick={() => setShowModal(true)}
-        className="mb-3"
-      >
-        Add Vendor Details
-      </Button>
-)}
+      {userProfile?.isAdmin === "true" ? null : (
+        <Button
+          variant="primary"
+          onClick={() => setShowModal(true)}
+          className="mb-3"
+        >
+          Add Vendor Details
+        </Button>
+      )}
       <Modal show={showModal} onHide={resetForm}>
         <Modal.Header closeButton>
           <Modal.Title>Vendor Survey</Modal.Title>

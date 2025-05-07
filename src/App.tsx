@@ -22,7 +22,6 @@ import TermsAndConditions from "./pages/TermsConditions";
 import SignIn from "./pages/SignIn";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import { useAuthStore } from "./stores/useAuthStore";
-import RefreshPrompt from "./components/RefreshPrompt";
 
 function App() {
   const hydrateTokens = useAuthStore((s) => s.hydrateTokens);

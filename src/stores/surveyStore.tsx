@@ -5,6 +5,8 @@ import axios from "axios";
 
 // Define the Survey type directly in the store
 export type Survey = {
+  employee: {};
+  constructionMaterials: string;
   employeeId: string;
   serviceType: string;
   description?: string;
@@ -31,7 +33,7 @@ interface SurveyState {
   lastKey: string | null; // Add a state for lastKey
   surveyloading: boolean;
   error: string | null;
-  fetchSurveys: (limit: string, lastKey?: string | null) => Promise<void>;
+  fetchSurveys: (limit?: string, lastKey?: string | null) => Promise<void>;
   addSurvey: (surveyData: Omit<Survey, "id">) => Promise<void>;
 }
 

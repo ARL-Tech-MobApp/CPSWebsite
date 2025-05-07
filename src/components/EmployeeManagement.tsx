@@ -10,16 +10,15 @@ import {
 } from "react-bootstrap";
 import { BsPersonPlus, BsCheckCircle, BsArrowLeft } from "react-icons/bs";
 import { useEmployeeStore } from "../stores/employeeStore";
-import MultiSelectDropdown from "./MultiSelectDropdown";
 
 const PersonPlusIcon = BsPersonPlus as unknown as React.FC;
 const CheckIcon = BsCheckCircle as unknown as React.FC;
 const ArrowLeftIcon = BsArrowLeft as unknown as React.FC;
 
-
 interface EmployeeFormData {
-  id?: string; // Optional for new employees
+  id?: string;
   fullName: string;
+  empId?: string;
   position: string;
   department: string;
   dob: string;
@@ -28,7 +27,7 @@ interface EmployeeFormData {
   address?: string;
   joiningDate: string;
   salary?: string;
-  cities?: string[];
+  city?: string;
 }
 
 interface Props {
@@ -42,29 +41,15 @@ type FormControlElement =
   | HTMLInputElement
   | HTMLSelectElement
   | HTMLTextAreaElement;
-  const EmployeeManagement: React.FC<Props> = ({
-    formData,
-    setFormData,
-    showModal,
-    setShowModal,
-  }) => {
+const EmployeeManagement: React.FC<Props> = ({
+  formData,
+  setFormData,
+  showModal,
+  setShowModal,
+}) => {
   const [isUploading, setIsUploading] = useState(false);
-  const { addEmployee,updateEmployee } = useEmployeeStore();
+  const { addEmployee, updateEmployee } = useEmployeeStore();
 
-  const cityOptions = [
-    "Bhubaneswar",
-    "Cuttack",
-    "Jajpur",
-    "Salipur",
-    "Rourkela",
-    "Balasore",
-    "Berhampur",
-    "Puri",
-  ].map((city) => ({
-    label: city,
-    value: city.toLowerCase().replace(/\s+/g, "_"),
-  }));
-   
   const [formStep, setFormStep] = useState<number>(1);
   const handleInputChange = (e: React.ChangeEvent<FormControlElement>) => {
     const { name, value, type } = e.target as
@@ -77,12 +62,6 @@ type FormControlElement =
       [name]: type === "number" ? parseFloat(value) : value,
     }));
   };
-  const handleCityChange = (selectedList: any[]) => {
-    setFormData((prev) => ({
-      ...prev,
-      cities: selectedList.map((item) => item.value), // get the selected values
-    }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,43 +70,49 @@ type FormControlElement =
     } else {
       setIsUploading(true);
       try {
-        if(formData?.id) {
+        if (formData?.id) {
           const updatedData = {
-            id: formData.id,
+            empId: formData.id,
             fullName: formData.fullName,
             position: formData.position,
             department: formData.department,
             dob: formData.dob,
             email: formData.email,
-            phonenumber: formData.phone || "",
+            phoneNumber: formData.phone || "",
             address: formData.address || "",
-            joiningdate: formData.joiningDate,
+            joiningDate: formData.joiningDate,
             salary: formData.salary?.toString() || "",
-            cities: formData.cities || [],
-          }
-          await updateEmployee(formData.id,updatedData)
-        }else{  
-        await addEmployee({
-          fullName: formData.fullName,
-          position: formData.position,
-          department: formData.department,
-          dob: formData.dob,
-          email: formData.email,
-          phonenumber: formData.phone || "",
-          address: formData.address || "",
-          joiningdate: formData.joiningDate,
-          salary: formData.salary?.toString() || "",
-          cities: formData.cities || [],
-        });
-      }
+            city: formData.city || "",
+          };
+          await updateEmployee(formData.id, updatedData);
+        } else {
+          await addEmployee({
+            empId: formData.empId,
+            fullName: formData.fullName,
+            position: formData.position,
+            department: formData.department,
+            dob: formData.dob,
+            email: formData.email,
+            phoneNumber: formData.phone || "",
+            address: formData.address || "",
+            joiningDate: formData.joiningDate,
+            salary: formData.salary?.toString() || "",
+            city: formData.city || "",
+          });
+        }
         // Reset form
         setFormData({
           fullName: "",
+          empId: "",
           position: "",
           department: "",
           dob: "",
           email: "",
           joiningDate: new Date().toISOString().split("T")[0],
+          phone: "",
+          address: "",
+          salary: "",
+          city: "",
         });
         setFormStep(1);
         setIsUploading(false);
@@ -147,11 +132,16 @@ type FormControlElement =
   const resetForm = () => {
     setFormData({
       fullName: "",
+      empId: "",
       position: "",
       department: "",
       dob: "",
       email: "",
       joiningDate: new Date().toISOString().split("T")[0],
+      phone: "",
+      address: "",
+      salary: "",
+      city: "",
     });
     setFormStep(1);
     setShowModal(false);
@@ -161,6 +151,18 @@ type FormControlElement =
     <>
       <h5 className="mb-4">Basic Information</h5>
       <Row className="mb-3">
+        <Col md={6}>
+          <Form.Group>
+            <Form.Label>EmployeeId*</Form.Label>
+            <Form.Control
+              type="text"
+              name="empId"
+              value={formData.empId}
+              onChange={handleInputChange}
+              required
+            />
+          </Form.Group>
+        </Col>
         <Col md={6}>
           <Form.Group>
             <Form.Label>Full Name*</Form.Label>
@@ -173,31 +175,7 @@ type FormControlElement =
             />
           </Form.Group>
         </Col>
-        <Col md={6}>
-          <Form.Group>
-            <Form.Label>Position*</Form.Label>
-            <Form.Control
-              as="select"
-              name="position"
-              value={formData.position}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="">Select Position</option>
-              <option value="Manager">Manager</option>
-              <option value="Developer">Developer</option>
-              <option value="Designer">Designer</option>
-              {/* Add more positions as needed */}
-            </Form.Control>
-          </Form.Group>
-        </Col>
       </Row>
-      <MultiSelectDropdown
-        options={cityOptions}
-        label="Choose Cities"
-        value={formData.cities}
-        onChange={handleCityChange}
-      />
 
       <Row className="mb-3">
         <Col md={6}>
@@ -212,9 +190,62 @@ type FormControlElement =
             >
               <option value="">Select Department</option>
               <option value="HR">HR</option>
-              <option value="Engineering">Engineering</option>
-              <option value="Design">Design</option>
+              <option value="IT">IT</option>
+              <option value="Sales & Marketing">Sales & Marketing</option>
+              <option value="Digital Marketing">Digital Marketing</option>
+              <option value="Finance">Finance</option>
+              <option value="HR">HR</option>
               {/* Add more departments as needed */}
+            </Form.Control>
+          </Form.Group>
+        </Col>
+        <Col md={6}>
+          <Form.Group>
+            <Form.Label>Position*</Form.Label>
+            <Form.Control
+              as="select"
+              name="position"
+              value={formData.position}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="">Select Position</option>
+              <option value="GM">GM</option>
+              <option value="ZM">ZM</option>
+              <option value="Full Stack Developer">Full Stack Developer</option>
+              <option value="Back-End Developer">Back-End Developer</option>
+              <option value="Front-End Developer">Front-End Developer</option>
+              <option value="CRM">CRM</option>
+              <option value="FSA">FSA</option>
+              <option value="Graphic Desingner">Graphic Desingner</option>
+              <option value="Accounts Executive">Accounts Executive</option>
+              <option value="CareTaker">CareTaker</option>
+              {/* Add more positions as needed */}
+            </Form.Control>
+          </Form.Group>
+        </Col>
+      </Row>
+      <Row className="mb-3">
+        <Col md={6}>
+          <Form.Group>
+            <Form.Label>City*</Form.Label>
+            <Form.Control
+              as="select"
+              name="city"
+              value={formData.city}
+              onChange={handleInputChange}
+              required
+            >
+              <option value="">Select City</option>
+              <option value="Bhubaneswar">Bhubaneswar</option>
+              <option value="Bhubaneswar(HO)">Bhubaneswar(HO)</option>
+              <option value="Kolkata">Kolkata</option>
+              <option value="Vishakhapatnam">Vishakhapatnam</option>
+              <option value="Hyderabad">Hyderabad</option>
+              <option value="Pune">Pune</option>
+              <option value="Ahmedabad">Ahmedabad</option>
+              <option value="Raipur">Raipur</option>
+              {/* Add more positions as needed */}
             </Form.Control>
           </Form.Group>
         </Col>
@@ -258,6 +289,7 @@ type FormControlElement =
               name="phone"
               value={formData.phone || ""}
               onChange={handleInputChange}
+              required
             />
           </Form.Group>
         </Col>
@@ -271,6 +303,7 @@ type FormControlElement =
           name="address"
           value={formData.address || ""}
           onChange={handleInputChange}
+          required
         />
       </Form.Group>
     </>
@@ -373,26 +406,26 @@ type FormControlElement =
                   <ArrowLeftIcon /> Back
                 </Button>
               )}
-                <Button
+              <Button
                 variant={formStep === 3 ? "success" : "primary"}
                 type="submit"
                 disabled={isUploading}
-                >
+              >
                 {formStep === 3 ? (
                   <>
-                  <CheckIcon /> Submit{" "}
-                  {isUploading && (
-                    <span
-                    className="spinner-border spinner-border-sm ms-2"
-                    role="status"
-                    aria-hidden="true"
-                    ></span>
-                  )}
+                    <CheckIcon /> Submit{" "}
+                    {isUploading && (
+                      <span
+                        className="spinner-border spinner-border-sm ms-2"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                    )}
                   </>
                 ) : (
                   "Next"
                 )}
-                </Button>
+              </Button>
             </div>
           </Form>
         </Modal.Body>
