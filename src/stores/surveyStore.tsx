@@ -17,7 +17,7 @@ export type Survey = {
   contact2?: string;
   address?: string;
   pincode?: string;
-  shopType?: string;
+  shopStatus?: string;
   visitingCardUrl?:
     | ReactNode
     | ReactElement
