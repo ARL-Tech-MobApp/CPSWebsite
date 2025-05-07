@@ -276,13 +276,13 @@ function EmployeeDashboard() {
       render: (row) => (
         <div>
           <button
-            className="btn btn-sm btn-primary me-2"
+            className="btn btn-sm btn-primary me-2 mb-2"
             onClick={() => handleView(row)}
           >
             View
           </button>
           <button
-            className="btn btn-sm btn-primary me-2"
+            className="btn btn-sm btn-primary me-2 mb-2"
             onClick={() => handleEdit(row)}
           >
             Edit
@@ -362,13 +362,13 @@ function EmployeeDashboard() {
       render: (row) => (
         <div>
            <button
-            className="btn btn-sm btn-primary me-2"
+            className="btn btn-sm btn-primary me-2 mb-2"
             onClick={() => handleView(row)}
           >
             View
           </button>
           <button
-            className="btn btn-sm btn-primary me-2"
+            className="btn btn-sm btn-primary me-2 mb-2"
             onClick={() => handleEditVisitor(row)}
           >
             Edit
