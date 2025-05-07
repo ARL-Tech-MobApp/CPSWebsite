@@ -2,6 +2,7 @@
 import { create } from "zustand";
 import { ReactNode, ReactElement, JSX } from "react";
 import axios from "axios";
+import moment from "moment";
 
 // Define the Survey type directly in the store
 export type Survey = {
@@ -46,7 +47,7 @@ type SurveyResponse = {
   lastEvaluatedKey: string | null;
 };
 
-export const useSurveyStore = create<SurveyState>((set) => ({
+export const useSurveyStore = create<SurveyState>((set,get) => ({
   
   surveys: [],
   surveyloading: false,
@@ -60,11 +61,23 @@ export const useSurveyStore = create<SurveyState>((set) => ({
       const response = await axios.get<SurveyResponse>(
         `https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/get-survey?limit=${limit}&lastKey=${lastKey || ''}`
       );
-      set((state) => ({
-        surveys: lastKey ? [...state.surveys, ...response.data.surveys] : response.data.surveys, // Append data for pagination
-        lastKey: response.data.lastEvaluatedKey || null, // Update lastKey for the next request
-        surveyloading: false,
-      }));
+      const newSurveys = response.data.surveys || [];
+
+    // Combine existing surveys if paginated
+    const allSurveys = lastKey
+      ? [...(get().surveys || []), ...newSurveys]
+      : newSurveys;
+
+    // ✅ Sort by createdAt descending (latest first)
+    const sortedSurveys = allSurveys.sort((a, b) =>
+      moment(b.createdAt).valueOf() - moment(a.createdAt).valueOf()
+    );
+
+    set({
+      surveys: sortedSurveys,
+      lastKey: response.data.lastEvaluatedKey || null,
+      surveyloading: false,
+    });
     }catch (error) {
       set({ error: "Failed to fetch surveys", surveyloading: false });
     }
