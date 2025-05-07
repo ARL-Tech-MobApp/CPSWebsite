@@ -1,4 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+
+// Extend the Window interface to include bootstrap
+
 import GenericTable, { Column } from "../components/GenericTable";
 import VisitorManagement from "../components/VisitorManagement";
 import Header from "../components/Navbar";
@@ -26,6 +29,12 @@ interface EmployeeFormData {
   joiningDate: string;
   salary?: string;
   cities?: string[];
+}
+
+declare global {
+  interface Window {
+    bootstrap: any;
+  }
 }
 
 type VisitorType =
@@ -386,41 +395,23 @@ function EmployeeDashboard() {
   const sortedEmployees = employees?.slice()?.reverse();
   const modalRef = useRef<HTMLDivElement | null>(null);
   const surveyData = sortedSurveys?.map((survey) => ({
-    employeeId: (
-      <div>
-        {survey?.employeeId}
-        <Button
-          onClick={() =>
-            setShowEmployeeDetailsModal({
-              details: survey?.employee,
-              status: true,
-            })
-          }
-          className="btn btn-sm btn-primary"
-        >
-          Show Details
-        </Button>
-      </div>
-    ),
-    ownerName: survey?.ownerName ?? "None",
-    serviceType: survey?.serviceType ?? "None",
-    materialName: survey?.constructionMaterials ?? "None",
-    description: survey?.description ?? "None",
-    contact1: survey?.contact1 ?? "None",
-    contact2: survey?.contact2 ?? "None",
-    visitingCardUrl: survey?.visitingCardUrl ? (
-      <img
-        src={String(survey?.visitingCardUrl)}
-        alt=""
-        width={100}
-        height={100}
-      />
-    ) : (
-      <p>None</p>
-    ),
-    pincode: survey?.pincode ?? "None",
-    address: survey?.address ?? "None",
-  }));
+      ...survey,
+      actions: (
+        <div>
+          <Button
+            onClick={() =>
+              setShowEmployeeDetailsModal({
+                details: survey?.employee,
+                status: true,
+              })
+            }
+            className="btn btn-sm btn-primary"
+          >
+            Show Details
+          </Button>
+        </div>
+      ),
+    }));
   console.log("sortedEmployees", sortedEmployees);
 
   const employeeData: Employee[] = (sortedEmployees ?? [])
@@ -619,7 +610,7 @@ function EmployeeDashboard() {
       <div
         className="modal fade"
         id="employeeDetailsModal"
-        tabIndex="-1"
+        tabIndex={-1}
         aria-hidden="true"
         ref={modalRef}
       >
