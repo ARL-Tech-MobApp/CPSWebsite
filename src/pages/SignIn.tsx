@@ -113,10 +113,10 @@ const SignIn: React.FC = () => {
                   }`}
                   {...register("employeeId", {
                     required: "Employee ID is required",
-                    pattern: {
-                      value: /^EMP\d{5,}$/,
-                      message: "ID must start with EMP followed by numbers",
-                    },
+                    // pattern: {
+                    //   value: /^EMP\d{5,}$/,
+                    //   message: "ID must start with EMP followed by numbers",
+                    // },
                   })}
                   placeholder="e.g.EMP12345"
                 />
