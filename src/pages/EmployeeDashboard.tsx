@@ -209,8 +209,8 @@ function EmployeeDashboard() {
   const handleEditVisitor = (survey: Survey) => {
     setVisitorFormData({
       employeeId: survey.employeeId ?? "",
-      visitorType: survey.serviceType
-        ? (survey.serviceType.split(",") as VisitorType[])
+      visitorType: survey.visitorType
+        ? (survey.visitorType.split(",") as VisitorType[])
         : [],
       description: survey.description ?? "",
       vendorName: survey.vendorName ?? "",
@@ -272,8 +272,8 @@ function EmployeeDashboard() {
       // it's a survey
       setVisitorFormData({
         employeeId: item.employeeId ?? "",
-        visitorType: item.serviceType
-          ? (item.serviceType.split(",") as VisitorType[])
+        visitorType: item.visitorType
+          ? (item.visitorType.split(",") as VisitorType[])
           : [],
         description: item.description ?? "",
         vendorName: item.vendorName ?? "",
@@ -337,12 +337,26 @@ function EmployeeDashboard() {
   const surveyColumns: Column<Survey & { actions?: any }>[] = [
     { key: "employeeId", title: "Employee ID", sortable: true },
     { key: "ownerName", title: "Owner Name", sortable: true },
-    { key: "shopStatus", title: "Service Type" },
+    { key: "visitorType", title: "Visitor Type" },
     { key: "constructionMaterials", title: "Material Name" },
     { key: "description", title: "Description" },
     { key: "contact1", title: "Contact" },
     { key: "contact2", title: "Alt. Contact" },
-    { key: "visitingCardUrl", title: "Visiting Card" },
+    {
+      key: "visitingCardUrl",
+      title: "Visiting Card",
+      render: (row) => (
+        row.visitingCardUrl ? (
+          <img
+            src={String(row.visitingCardUrl)}
+            alt="Visiting Card"
+            style={{ width: "100px", height: "auto", objectFit: "cover" }}
+          />
+        ) : (
+          "No Image"
+        )
+      ),
+    },
     { key: "pincode", title: "Pincode" },
     { key: "address", title: "Address" },
     {
@@ -350,6 +364,12 @@ function EmployeeDashboard() {
       title: "Actions",
       render: (row) => (
         <div>
+           <button
+            className="btn btn-sm btn-primary me-2"
+            onClick={() => handleView(row)}
+          >
+            view
+          </button>
           <button
             className="btn btn-sm btn-primary me-2"
             onClick={() => handleEditVisitor(row)}

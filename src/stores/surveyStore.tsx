@@ -8,7 +8,7 @@ export type Survey = {
   employee: {};
   constructionMaterials: string;
   employeeId: string;
-  serviceType: string;
+  visitorType: string;
   description?: string;
   vendorName?: string;
   materialName?: string;
