@@ -33,13 +33,13 @@ const Header: React.FC = () => {
                     <>
                     <span >
                       <span className="ffw-bold fs-5 fs-md-3">Hi {userProfile?.fullName}</span>
+                      <h4 className="sitename-sub m-0 ">Welcome to CPS Pvt Ltd</h4>
                     </span>
                     </>
                   ) : (
                   "CPS Pvt Ltd"
                   )}
                 </h1>
-                <h4 className="sitename-sub m-0 ">Welcome to CPS Pvt Ltd</h4>
               </div>
             </Navbar.Brand>
 

@@ -165,7 +165,7 @@ console.log("hdsffjds",formData)
             <Form.Label>EmployeeId*</Form.Label>
             <Form.Control
               type="text"
-              name="empId"
+              name="id"
               value={formData?.id}
               onChange={handleInputChange}
               required
