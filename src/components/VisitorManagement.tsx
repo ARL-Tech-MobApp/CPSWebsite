@@ -18,6 +18,7 @@ import { useAuthStore } from "../stores/useAuthStore";
 import axios from "axios";
 import { InfoCircle } from "react-bootstrap-icons";
 
+
 const UploadIcon = BsUpload as unknown as React.FC;
 const CheckIcon = BsCheckCircle as unknown as React.FC;
 const ArrowLeftIcon = BsArrowLeft as unknown as React.FC;
@@ -32,11 +33,6 @@ type VisitorType =
   | "concrete product"
   | "other";
 
-  | "local supplier"
-  | "marbal & tile store"
-  | "concrete product"
-  | "other";
-
 type ConstructionMaterial = "sand" | "bricks" | "cement" | "steel";
 type ShopStatus = "with_shop" | "without_shop";
 
@@ -44,7 +40,6 @@ interface VisitorFormData {
   employeeId?: string;
   visitorType: VisitorType[];
   hasVisitingCard: boolean;
-  visitingCard?: File | null;
   visitingCard?: File | null;
   description?: string;
   vendorName?: string;
@@ -71,17 +66,11 @@ const VisitorManagement: React.FC<Props> = ({
   showModal,
   setShowModal,
 }) => {
-  formData,
-  setFormData,
-  showModal,
-  setShowModal,
-}) => {
   const [showUploadProgress, setShowUploadProgress] = useState(false);
   const { fetchSurveys, addSurvey, surveyloading } = useSurveyStore();
   const { userProfile, profileLoading } = useAuthStore();
   const [formStep, setFormStep] = useState<number>(1);
   const [submittedData, setSubmittedData] = useState<VisitorFormData[]>([]);
-  console.log("formDatahdfi", formData);
   console.log("formDatahdfi", formData);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked, files } = e.target;
@@ -138,18 +127,6 @@ const VisitorManagement: React.FC<Props> = ({
     }));
   };
 
-  // Check if the number starts with '1' or '2' for WhatsApp
-  const getWhatsappStyle = (contact: string) => {
-    if (
-      contact &&
-      (contact.startsWith("1") || contact.startsWith("2")) &&
-      contact.length === 10
-    ) {
-      return { backgroundColor: "green", color: "white" }; // Apply green background if it's a WhatsApp number
-    }
-    return {};
-  };
-
   const validateForm = (): string | null => {
     if (formStep === 1) {
       if (formData.visitorType.length === 0) {
@@ -157,33 +134,10 @@ const VisitorManagement: React.FC<Props> = ({
       }
     }
 
-
     if (formStep === 2) {
       if (formData.hasVisitingCard && !formData.visitingCard) {
         return "Please upload a visiting card.";
       }
-
-      if (!formData.hasVisitingCard) {
-        if (!formData.vendorName?.trim()) return "Vendor name is required.";
-        if (!formData.ownerName?.trim()) return "Owner name is required.";
-        if (!formData.contact1?.trim()) return "Primary contact is required.";
-        if (!/^\d{10}$/.test(formData.contact1))
-          return "Enter valid 10-digit contact.";
-        if (formData.contact2 && !/^\d{10}$/.test(formData.contact2)) {
-          return "Enter valid 10-digit secondary contact.";
-        }
-        if (!formData.whatsappNumber) {
-          return "please select the check box for which is ur whtsappNumer.";
-        }
-        if (!formData.address?.trim()) return "Address is required.";
-        if (!formData.pincode?.trim()) return "Pincode is required.";
-        if (!/^\d{6}$/.test(formData.pincode))
-          return "Enter valid 6-digit pincode.";
-        if (!formData.description?.trim()) {
-          return "Description is required.";
-        }
-      }
-
 
       if (!formData.hasVisitingCard) {
         if (!formData.vendorName?.trim()) return "Vendor name is required.";
@@ -218,17 +172,10 @@ const VisitorManagement: React.FC<Props> = ({
         !formData.shopStatus
       )
         return "Please select a shop status.";
-      if (
-        formData.visitorType.includes("construction_material") &&
-        !formData.shopStatus
-      )
-        return "Please select a shop status.";
     }
-
 
     return null;
   };
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -257,8 +204,8 @@ const VisitorManagement: React.FC<Props> = ({
         whatsappNumber: formData?.whatsappNumber || "None",
         address: formData.address || "None",
         pincode: formData.pincode || "None",
-        materialName: formData.constructionMaterials?.join(",")|| "None",
-        shopType: formData.shopStatus || "None",
+        constructionMaterials: formData.constructionMaterials?.join(",") || "None",
+        shopStatus: formData.shopStatus || "None",
         visitingCardFileName: formData.visitingCard?.name || undefined,
       };
 
