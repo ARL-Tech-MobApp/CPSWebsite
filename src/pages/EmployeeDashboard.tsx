@@ -219,10 +219,10 @@ function EmployeeDashboard() {
       contact2: survey.contact2 ?? "",
       address: survey.address ?? "",
       pincode: survey.pincode ?? "",
-      constructionMaterials: survey.materialName
-        ? (survey.materialName.split(",") as ConstructionMaterial[])
+      constructionMaterials: survey.constructionMaterials
+        ? (survey.constructionMaterials.split(",") as ConstructionMaterial[])
         : [],
-      shopStatus: (survey.shopType as ShopStatus) ?? undefined,
+      shopStatus: (survey.shopStatus as ShopStatus) ?? undefined,
       hasVisitingCard: !!survey.visitingCardUrl,
       visitingCard: undefined, // Visiting card file can't be restored from URL
     });
@@ -282,10 +282,10 @@ function EmployeeDashboard() {
         contact2: item.contact2 ?? "",
         address: item.address ?? "",
         pincode: item.pincode ?? "",
-        constructionMaterials: item.materialName
-          ? (item.materialName.split(",") as ConstructionMaterial[])
+        constructionMaterials: item.constructionMaterials
+          ? (item.constructionMaterials.split(",") as ConstructionMaterial[])
           : [],
-        shopStatus: (item.shopType as ShopStatus) ?? undefined,
+        shopStatus: (item.shopStatus as ShopStatus) ?? undefined,
         hasVisitingCard: !!item.visitingCardUrl,
         visitingCard: undefined,
       });
@@ -337,8 +337,8 @@ function EmployeeDashboard() {
   const surveyColumns: Column<Survey & { actions?: any }>[] = [
     { key: "employeeId", title: "Employee ID", sortable: true },
     { key: "ownerName", title: "Owner Name", sortable: true },
-    { key: "serviceType", title: "Service Type" },
-    { key: "materialName", title: "Material Name" },
+    { key: "shopStatus", title: "Service Type" },
+    { key: "constructionMaterials", title: "Material Name" },
     { key: "description", title: "Description" },
     { key: "contact1", title: "Contact" },
     { key: "contact2", title: "Alt. Contact" },

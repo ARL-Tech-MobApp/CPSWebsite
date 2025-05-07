@@ -204,8 +204,8 @@ const VisitorManagement: React.FC<Props> = ({
         whatsappNumber: formData?.whatsappNumber || "None",
         address: formData.address || "None",
         pincode: formData.pincode || "None",
-        materialName: formData.constructionMaterials?.join(",") || "None",
-        shopType: formData.shopStatus || "None",
+        constructionMaterials: formData.constructionMaterials?.join(",") || "None",
+        shopStatus: formData.shopStatus || "None",
         visitingCardFileName: formData.visitingCard?.name || undefined,
       };
 
