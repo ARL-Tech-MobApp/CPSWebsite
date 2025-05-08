@@ -15,6 +15,7 @@ import { Console } from "console";
 import ViewShow from "../components/ViewShow";
 import moment from "moment";
 import DailyWorksheet from "../components/DailyWorksheet";
+import RandomQuote from "../components/RandomQuote/RandomQuote";
 
 interface EmployeeFormData {
   id?: string; // Optional for new employees
@@ -29,6 +30,7 @@ interface EmployeeFormData {
   joiningDate: string;
   salary?: string;
   cities?: string[];
+  city?: string; // Added city property
   city?: string; // Added city property
 }
 
@@ -80,7 +82,7 @@ function EmployeeDashboard() {
   const markAsTouched = (id: string) => {
     setTouchedSurveyIds((prev) => Array.from(new Set([...prev, id])));
   };
-  
+
   const profileFields = [
     { label: "Full Name", value: userProfile?.fullName },
     { label: "Position", value: userProfile?.position },
@@ -91,7 +93,7 @@ function EmployeeDashboard() {
     // { label: "Phone", value: userProfile?.phoneNumber },
     // { label: "Address", value: userProfile?.address },
     // { label: "Joining Date", value: userProfile?.joiningDate },
-    // { label: "Salary", value: $${userProfile?.salary.toLocaleString()} },
+    // { label: "Salary", value: ${userProfile?.salary.toLocaleString()} },
     // {
     //   label: "Created At",
     //   value: new Date(userProfile?.createdAt).toLocaleString(),
@@ -107,7 +109,7 @@ function EmployeeDashboard() {
     phoneNumber?: string;
     city?: string;
   }
-  
+
   const [showEmployeeDetailsModal, setShowEmployeeDetailsModal] = useState<{
     details: EmployeeDetails;
     status: boolean;
@@ -119,6 +121,7 @@ function EmployeeDashboard() {
 
   const [formData, setFormData] = useState<EmployeeFormData>({
     fullName: "",
+    id: "",
     id: "",
     position: "",
     department: "",
@@ -151,8 +154,9 @@ function EmployeeDashboard() {
     city: string;
   };
 
-  const { employees, fetchEmployees,deleteEmployee } = useEmployeeStore();
-  const { surveys,deleteSurvey, surveyloading, fetchSurveys, lastKey, } = useSurveyStore();
+  const { employees, fetchEmployees, deleteEmployee } = useEmployeeStore();
+  const { surveys, deleteSurvey, surveyloading, fetchSurveys, lastKey } =
+    useSurveyStore();
   console.log("surveys", surveys);
   useEffect(() => {
     // Fetch the first batch of data
@@ -171,22 +175,25 @@ function EmployeeDashboard() {
   const handleEdit = (employee: Employee) => {
     setFormData({
       id: employee.id,
+      id: employee.id,
       fullName: employee.fullName,
       position: employee.position,
       department: employee.department,
+      city: employee.city,
       city: employee.city,
       dob: employee.dob,
       email: employee.email,
       phone: employee.phoneNumber,
       address: employee.address,
       salary: employee.salary,
-      joiningDate: moment(employee.joiningDate, "dddd, DD MMM [at] hh:mm A").format("YYYY-MM-DD")
-
+      joiningDate: moment(
+        employee.joiningDate,
+        "dddd, DD MMM [at] hh:mm A"
+      ).format("YYYY-MM-DD"),
     });
     setShowEmployeeModal(true);
     setIsEditMode(true);
   };
-  
 
   const handleEditVisitor = (survey: Survey) => {
     markAsTouched(survey.id);
@@ -199,7 +206,7 @@ function EmployeeDashboard() {
       vendorName: survey.vendorName ?? "",
       ownerName: survey.ownerName ?? "",
       contact1: survey.contact1 ?? "",
-      contact2: survey.contact2==="None"?"":survey.contact2 ?? "",
+      contact2: survey.contact2 === "None" ? "" : survey.contact2 ?? "",
       whatsappNumber: survey.whatsappNumber ?? "",
       address: survey.address ?? "",
       pincode: survey.pincode ?? "",
@@ -212,7 +219,6 @@ function EmployeeDashboard() {
     });
     setShowVisitorModal(true);
   };
-
 
   const handleView = (item: any) => {
     if ("fullName" in item) {
@@ -289,7 +295,7 @@ function EmployeeDashboard() {
           </button>
           <button
             className="btn btn-sm btn-danger"
-            onClick={() => deleteEmployee({id:row?.id})}
+            onClick={() => deleteEmployee({ id: row?.id })}
           >
             Delete
           </button>
@@ -307,9 +313,9 @@ function EmployeeDashboard() {
         const isNew =
           moment().diff(moment(row.createdAt), "hours") <= 72 &&
           !touchedSurveyIds.includes(row.id);
-    
+
         return (
-          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "6px" }}>
             <span>{row.employeeId}</span>
             {userProfile?.isAdmin === "true" && isNew && (
               <span
@@ -325,11 +331,26 @@ function EmployeeDashboard() {
                 NEW
               </span>
             )}
+            {userProfile?.isAdmin === "true" && (
+              <div>
+                <Button
+                  onClick={() =>
+                  setShowEmployeeDetailsModal({
+                    details: row?.employee,
+                    status: true,
+                  })
+                  }
+                  className="btn btn-sm btn-primary"
+                  style={{ fontSize: "12px" }}
+                >
+                  Details
+                </Button>
+              </div>
+            )}
           </div>
         );
       },
-    }
-    ,
+    },
     { key: "ownerName", title: "Owner Name", sortable: true },
     { key: "visitorType", title: "Visitor Type" },
     { key: "constructionMaterials", title: "Material Name" },
@@ -339,18 +360,28 @@ function EmployeeDashboard() {
     {
       key: "visitingCardUrl",
       title: "Visiting Card",
-      render: (row) => (
+      render: (row) =>
         row.visitingCardUrl ? (
           <img
             src={String(row.visitingCardUrl)}
             alt="Visiting Card"
-            style={{ width: "100px", height: "auto", objectFit: "cover", cursor: "pointer" }}
-            onClick={() => setSelectedImage(typeof row.visitingCardUrl === 'string' ? row.visitingCardUrl : null)}
+            style={{
+              width: "100px",
+              height: "auto",
+              objectFit: "cover",
+              cursor: "pointer",
+            }}
+            onClick={() =>
+              setSelectedImage(
+                typeof row.visitingCardUrl === "string"
+                  ? row.visitingCardUrl
+                  : null
+              )
+            }
           />
         ) : (
           "No Image"
-        )
-      ),
+        ),
     },
     { key: "pincode", title: "Pincode" },
     { key: "address", title: "Address" },
@@ -361,7 +392,7 @@ function EmployeeDashboard() {
       title: "Actions",
       render: (row) => (
         <div>
-           <button
+          <button
             className="btn btn-sm btn-primary me-2 mb-2"
             onClick={() => handleView(row)}
           >
@@ -375,7 +406,7 @@ function EmployeeDashboard() {
           </button>
           <button
             className="btn btn-sm btn-danger"
-            onClick={() => deleteSurvey({surveyId:row?.id})}
+            onClick={() => deleteSurvey({ surveyId: row?.id })}
           >
             Delete
           </button>
@@ -410,23 +441,23 @@ function EmployeeDashboard() {
   }, [showEmployeeDetailsModal.status]);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const surveyData = filteredSurveys?.map((survey) => ({
-      ...survey,
-      actions: (
-        <div>
-          <Button
-            onClick={() =>
-              setShowEmployeeDetailsModal({
-                details: survey?.employee,
-                status: true,
-              })
-            }
-            className="btn btn-sm btn-primary"
-          >
-            Show Details
-          </Button>
-        </div>
-      ),
-    }));
+    ...survey,
+    actions: (
+      <div>
+        <Button
+          onClick={() =>
+            setShowEmployeeDetailsModal({
+              details: survey?.employee,
+              status: true,
+            })
+          }
+          className="btn btn-sm btn-primary"
+        >
+          Show Details
+        </Button>
+      </div>
+    ),
+  }));
 
   const employeeData: Employee[] = (employees ?? [])
     .filter((emp): emp is Employee => !!emp)
@@ -454,6 +485,7 @@ function EmployeeDashboard() {
       <Header />
       {/* profile */}
       <div className="container mt-4">
+        <RandomQuote />
         <div className="card shadow shadow-sm rounded-4 p-4">
           <h3 className="mb-4 text-primary fw-bold text-center text-md-start">
             Profile Overview
@@ -517,6 +549,30 @@ function EmployeeDashboard() {
                 >
                   WorkSheet
                 </button>
+                <button
+                  className="nav-link"
+                  id="nav-tasks-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-tasks"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-tasks"
+                  aria-selected="true"
+                >
+                  Assigned Tasks
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Fuel Approvals
+                </button>
               </>
             ) : (
               <>
@@ -543,6 +599,30 @@ function EmployeeDashboard() {
                   aria-selected="true"
                 >
                   WorkSheet
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-tasks-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-tasks"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-tasks"
+                  aria-selected="true"
+                >
+                  Assigned Tasks To Me
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Fuel Requests
                 </button>
               </>
             )}
@@ -611,7 +691,7 @@ function EmployeeDashboard() {
             role="tabpanel"
             aria-labelledby="nav-worksheet-tab"
           >
-            <DailyWorksheet/>
+            <DailyWorksheet />
           </div>
         </div>
       </div>
