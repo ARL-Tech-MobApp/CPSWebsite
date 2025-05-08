@@ -279,7 +279,7 @@ function EmployeeDashboard() {
             className="btn btn-sm btn-primary me-2 mb-2"
             onClick={() => handleView(row)}
           >
-            view
+            View
           </button>
           <button
             className="btn btn-sm btn-primary me-2 mb-2"
@@ -365,7 +365,7 @@ function EmployeeDashboard() {
             className="btn btn-sm btn-primary me-2 mb-2"
             onClick={() => handleView(row)}
           >
-            view
+            View
           </button>
           <button
             className="btn btn-sm btn-primary me-2 mb-2"
