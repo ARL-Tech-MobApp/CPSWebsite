@@ -148,9 +148,9 @@ const VisitorManagement: React.FC<Props> = ({
         if (formData.contact2 && !/^\d{10}$/.test(formData.contact2)) {
           return "Enter valid 10-digit secondary contact.";
         }
-        if (!formData.whatsappNumber) {
-          return "please select the check box for which is ur whtsappNumer.";
-        }
+        // if (!formData.whatsappNumber) {
+        //   return "please select the check box for which is ur whtsappNumer.";
+        // }
         if (!formData.address?.trim()) return "Address is required.";
         if (!formData.pincode?.trim()) return "Pincode is required.";
         if (!/^\d{6}$/.test(formData.pincode))
@@ -398,6 +398,16 @@ const VisitorManagement: React.FC<Props> = ({
               onChange={handleInputChange}
             />
           </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Pincode</Form.Label>
+            <Form.Control
+              type="text"
+              name="pincode"
+              value={formData.pincode || ""}
+              onChange={handleInputChange}
+              required
+            />
+          </Form.Group>
 
           {showConstructionMaterialOptions && (
             <>
@@ -529,17 +539,6 @@ const VisitorManagement: React.FC<Props> = ({
               rows={3}
               name="address"
               value={formData.address || ""}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Pincode</Form.Label>
-            <Form.Control
-              type="text"
-              name="pincode"
-              value={formData.pincode || ""}
               onChange={handleInputChange}
               required
             />

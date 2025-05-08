@@ -62,12 +62,13 @@ const DailyWorksheetApp: React.FC = () => {
       if (!response.ok) throw new Error("Failed to fetch worksheets");
       const data = await response.json();
       const worksheets = data.worksheets || [];
-  
+
       // ✅ Sort by time (newest first)
-      const sortedWorksheets = worksheets.sort((a: { time: moment.MomentInput; }, b: { time: moment.MomentInput; }) =>
-        moment(b.time).valueOf() - moment(a.time).valueOf()
+      const sortedWorksheets = worksheets.sort(
+        (a: { time: moment.MomentInput }, b: { time: moment.MomentInput }) =>
+          moment(b.time).valueOf() - moment(a.time).valueOf()
       );
-  
+
       setWorksheets(sortedWorksheets);
     } catch (err) {
       console.error("Error fetching worksheets:", err);
@@ -177,18 +178,19 @@ const DailyWorksheetApp: React.FC = () => {
           ></button>
         </div>
       )}
-
-      <Button
-        variant="primary"
-        onClick={() => handleShowModal(null)}
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <Spinner animation="border" size="sm" />
-        ) : (
-          "+ Add Worksheet"
-        )}
-      </Button>
+      {userProfile?.isAdmin !== "true" && (
+        <Button
+          variant="primary"
+          onClick={() => handleShowModal(null)}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <Spinner animation="border" size="sm" />
+          ) : (
+            "+ Add Worksheet"
+          )}
+        </Button>
+      )}
 
       {isLoading && !worksheets.length ? (
         <div className="text-center mt-4">
@@ -205,9 +207,7 @@ const DailyWorksheetApp: React.FC = () => {
                     <div className="fw-bold">
                       {moment(item.time).format("dddd, D MMMM [at] h:mm A")}
                     </div>
-                    <div className="fw-bold">
-  {moment(item.time).fromNow()}
-</div>
+                    <div className="fw-bold">{moment(item.time).fromNow()}</div>
                     <div className="container p-2">
                       {item.content.length > 100
                         ? `${item.content.substring(0, 100)}...`
