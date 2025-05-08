@@ -152,13 +152,13 @@ const VisitorManagement: React.FC<Props> = ({
         //   return "please select the check box for which is ur whtsappNumer.";
         // }
         if (!formData.address?.trim()) return "Address is required.";
-        if (!formData.pincode?.trim()) return "Pincode is required.";
-        if (!/^\d{6}$/.test(formData.pincode))
-          return "Enter valid 6-digit pincode.";
         if (!formData.description?.trim()) {
           return "Description is required.";
         }
       }
+      if (!/^\d{6}$/.test(formData.pincode || ""))
+        return "Enter valid 6-digit pincode.";
+        if (!formData.pincode?.trim()) return "Pincode is required.";
 
       if (
         formData.visitorType.includes("construction_material") &&
