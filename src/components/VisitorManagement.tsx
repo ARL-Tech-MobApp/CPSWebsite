@@ -531,7 +531,16 @@ const VisitorManagement: React.FC<Props> = ({
               </Form.Group>
             </Col>
           </Row>
-
+          <Form.Group className="mb-3">
+            <Form.Label>Pincode</Form.Label>
+            <Form.Control
+              type="text"
+              name="pincode"
+              value={formData.pincode || ""}
+              onChange={handleInputChange}
+              required
+            />
+          </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Address</Form.Label>
             <Form.Control
