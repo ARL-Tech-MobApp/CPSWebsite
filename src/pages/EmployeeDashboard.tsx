@@ -31,7 +31,6 @@ interface EmployeeFormData {
   salary?: string;
   cities?: string[];
   city?: string; // Added city property
-  city?: string; // Added city property
 }
 
 declare global {
@@ -122,7 +121,6 @@ function EmployeeDashboard() {
   const [formData, setFormData] = useState<EmployeeFormData>({
     fullName: "",
     id: "",
-    id: "",
     position: "",
     department: "",
     dob: "",
@@ -175,11 +173,9 @@ function EmployeeDashboard() {
   const handleEdit = (employee: Employee) => {
     setFormData({
       id: employee.id,
-      id: employee.id,
       fullName: employee.fullName,
       position: employee.position,
       department: employee.department,
-      city: employee.city,
       city: employee.city,
       dob: employee.dob,
       email: employee.email,
@@ -315,7 +311,14 @@ function EmployeeDashboard() {
           !touchedSurveyIds.includes(row.id);
 
         return (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "6px" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: "6px",
+            }}
+          >
             <span>{row.employeeId}</span>
             {userProfile?.isAdmin === "true" && isNew && (
               <span
@@ -335,10 +338,10 @@ function EmployeeDashboard() {
               <div>
                 <Button
                   onClick={() =>
-                  setShowEmployeeDetailsModal({
-                    details: row?.employee,
-                    status: true,
-                  })
+                    setShowEmployeeDetailsModal({
+                      details: row?.employee,
+                      status: true,
+                    })
                   }
                   className="btn btn-sm btn-primary"
                   style={{ fontSize: "12px" }}
@@ -510,7 +513,12 @@ function EmployeeDashboard() {
       </div>
       <div className="container my-5">
         <nav className="my-3">
-          <div className="nav nav-tabs" id="nav-tab" role="tablist">
+          <div
+            className="nav nav-tabs flex-nowrap overflow-auto"
+            id="nav-tab"
+            role="tablist"
+            style={{ whiteSpace: "nowrap", WebkitOverflowScrolling: "touch" }}
+          >
             {userProfile?.isAdmin === "true" ? (
               <>
                 <button
@@ -535,7 +543,7 @@ function EmployeeDashboard() {
                   aria-controls="nav-profile"
                   aria-selected="false"
                 >
-                  Survey Details
+                  View Report
                 </button>
                 <button
                   className="nav-link"
@@ -547,7 +555,7 @@ function EmployeeDashboard() {
                   aria-controls="nav-worksheet"
                   aria-selected="true"
                 >
-                  WorkSheet
+                  Daily Work Done
                 </button>
                 <button
                   className="nav-link"
@@ -559,7 +567,7 @@ function EmployeeDashboard() {
                   aria-controls="nav-tasks"
                   aria-selected="true"
                 >
-                  Assigned Tasks
+                  Assign Task
                 </button>
                 <button
                   className="nav-link"
@@ -571,7 +579,103 @@ function EmployeeDashboard() {
                   aria-controls="nav-fuel"
                   aria-selected="true"
                 >
-                  Fuel Approvals
+                  Check Expenses
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                 Attendance
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Holiday Calender
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                 Sanction Leave
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Rating
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Employee Handbook
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Salary Slip
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Log In 
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Log Out 
                 </button>
               </>
             ) : (
@@ -586,7 +690,7 @@ function EmployeeDashboard() {
                   aria-controls="nav-profile"
                   aria-selected="true"
                 >
-                  Survey Details
+                  Submit Report
                 </button>
                 <button
                   className="nav-link"
@@ -598,7 +702,7 @@ function EmployeeDashboard() {
                   aria-controls="nav-worksheet"
                   aria-selected="true"
                 >
-                  WorkSheet
+                  Daily Work Done
                 </button>
                 <button
                   className="nav-link"
@@ -610,7 +714,7 @@ function EmployeeDashboard() {
                   aria-controls="nav-tasks"
                   aria-selected="true"
                 >
-                  Assigned Tasks To Me
+                  My Task
                 </button>
                 <button
                   className="nav-link"
@@ -622,7 +726,103 @@ function EmployeeDashboard() {
                   aria-controls="nav-fuel"
                   aria-selected="true"
                 >
-                  Fuel Requests
+                  Claim Expenses
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  My Attendance
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Holiday Calender
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Apply for Leave
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Rating
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Employee Handbook
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Salary Slip
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Log In
+                </button>
+                <button
+                  className="nav-link"
+                  id="nav-fuel-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-fuel"
+                  type="button"
+                  role="tab"
+                  aria-controls="nav-fuel"
+                  aria-selected="true"
+                >
+                  Log Out
                 </button>
               </>
             )}
