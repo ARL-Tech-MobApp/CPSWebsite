@@ -71,7 +71,8 @@ const VisitorManagement: React.FC<Props> = ({
   const { userProfile, profileLoading } = useAuthStore();
   const [formStep, setFormStep] = useState<number>(1);
   const [submittedData, setSubmittedData] = useState<VisitorFormData[]>([]);
-  console.log("formDatahdfi", formData);
+  // console.log("formDatahdfi", formData);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked, files } = e.target;
 
@@ -190,7 +191,7 @@ const VisitorManagement: React.FC<Props> = ({
       return;
     }
     setShowUploadProgress(true);
-    console.log("formData", formData);
+    // console.log("formData", formData);
     try {
       // Prepare survey data without the file
       const surveyData = {

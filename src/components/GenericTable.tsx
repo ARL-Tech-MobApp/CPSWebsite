@@ -82,7 +82,7 @@ const GenericTable = <T extends Record<string, any>>({
     });
   }, [sortColumn, sortOrder, filteredData]);
 
-  const totalPages = Math.ceil(sortedData.length / rowsPerPage);
+  const totalPages = Math.ceil(sortedData?.length / rowsPerPage);
   const paginatedData = hidePagination
     ? sortedData
     : sortedData?.slice(
@@ -276,8 +276,8 @@ const GenericTable = <T extends Record<string, any>>({
             <Col>
               <div className="text-muted">
                 Showing {(currentPage - 1) * rowsPerPage + 1} to{" "}
-                {Math.min(currentPage * rowsPerPage, sortedData.length)} of{" "}
-                {sortedData.length} results
+                {Math.min(currentPage * rowsPerPage, sortedData?.length)} of{" "}
+                {sortedData?.length} results
               </div>
             </Col>
             <Col xs="auto">
