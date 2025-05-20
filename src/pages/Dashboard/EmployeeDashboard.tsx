@@ -10,6 +10,7 @@ import ViewShow from "../../components/ViewShow";
 import RandomQuote from "../../components/RandomQuote/RandomQuote";
 import TabContentRenderer from "./config/TabContentRenderer";
 import ImagePreviewModal from "./component/ImagePreviewModal";
+import BirthdayAnniversarySection from "./component/BirthdayAnniversarySection";
 
 const EmployeeDashboard: React.FC = () => {
   const {
@@ -52,6 +53,15 @@ const EmployeeDashboard: React.FC = () => {
       <div className="container mt-4">
         <RandomQuote />
         <ProfileSection profileFields={profileFields} />
+        {userProfile && (
+          <BirthdayAnniversarySection
+            employees={employees}
+            userProfile={{
+              id: userProfile.id,
+              fullName: userProfile.fullName,
+            }}
+          />
+        )}
       </div>
       
       <div className="container my-5">
@@ -113,7 +123,6 @@ const EmployeeDashboard: React.FC = () => {
         visitorFormData={visitorFormData}
         viewType={viewType}
       />
-
       <EmployeeDetailsModal
         show={showEmployeeDetailsModal.status}
         details={showEmployeeDetailsModal.details}

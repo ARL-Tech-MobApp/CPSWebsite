@@ -76,7 +76,6 @@ export const getSurveyColumns = (
     key: "visitingCardUrl",
     title: "Visiting Card",
     render: (row) => {
-      console.log("row.visitingCardUrl:",JSON.stringify(row.visitingCardUrl,null,2));
       return row.visitingCardUrl ? (
         <img
           src={String(row.visitingCardUrl)}

@@ -18,7 +18,6 @@ export const getExpenseColumns = (
     key: "startMeterUrl",
     title: "Start Image",
     render: (row) => {
-      console.log("row.startMeterUrl", row.startMeterUrl);
       return row.startMeterUrl ? (
         <img
         src={String(row.startMeterUrl)}

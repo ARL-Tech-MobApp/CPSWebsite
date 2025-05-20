@@ -25,8 +25,9 @@ export interface Employee {
   joiningDate: string;
   salary: string;
   email: string;
-  createdAt: string;
+  createdAt?: string;
   city: string;
+  
 }
 
 export interface EmployeeDetails {
