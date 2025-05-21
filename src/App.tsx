@@ -20,7 +20,7 @@ import ScrollToTop from "./components/ScrollTop";
 import ComingSoonPage from "./pages/ComingSoon";
 import TermsAndConditions from "./pages/TermsConditions";
 import SignIn from "./pages/SignIn";
-import EmployeeDashboard from "./pages/EmployeeDashboard";
+import EmployeeDashboard from "./pages/Dashboard/EmployeeDashboard";
 import { useAuthStore } from "./stores/useAuthStore";
 
 function App() {
