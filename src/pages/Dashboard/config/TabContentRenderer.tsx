@@ -27,7 +27,6 @@ interface TabContentRendererProps {
     setSelectedImage: any;
   };
 }
-
 const TabContentRenderer: React.FC<TabContentRendererProps> = ({
   tabTarget,
   config,
@@ -58,6 +57,19 @@ const TabContentRenderer: React.FC<TabContentRendererProps> = ({
         )}
         data={data}
         heading={config.tableConfig.heading}
+        searchKeys={tabTarget === "#nav-home"?["fullName", "phoneNumber"]:["vendorName", "employeeId", "whatsappNumber","pincode"]}
+        onView={handlers.handleView}
+        onEdit={tabTarget === "#nav-home" ? handlers.handleEdit : handlers.handleEditVisitor}
+        onDelete={tabTarget === "#nav-home" ? handlers.deleteEmployee : handlers.deleteSurvey}
+        onAdd={() => {
+          if (tabTarget === "#nav-home") {
+            handlers.setIsEditMode?.(false); // Make sure it's in "add" mode
+            handlers.setShowEmployeeModal(true);
+          } else {
+            handlers.setShowVisitorModal(true);
+          }
+        }}
+        
       />
     )}
     {!config.tableConfig && <config.component />}

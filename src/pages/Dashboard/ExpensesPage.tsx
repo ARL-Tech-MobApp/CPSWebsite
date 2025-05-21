@@ -68,8 +68,8 @@ purpose:data?.purpose || "",
       setIsModalOpen(true);
     };
   
-    const deleteExpense = (id: string) => {
-      setExpenses(prev => prev.filter(e => e.id !== id));
+    const deleteExpense = (record: Expense) => {
+      setExpenses(prev => prev.filter(e => e.id !== record.id));
     };
   
 
@@ -77,14 +77,28 @@ purpose:data?.purpose || "",
     
     return (
       <div className="expenses-page">
-        <div className="page-header">
-          <h1>Bike Meter Expenses</h1>
-          <button className="add-btn" onClick={() => setIsModalOpen(true)}>Add New Expense</button>
-        </div>
   
         <GenericTable
-          columns={getExpenseColumns(handleView, handleEditExpense, deleteExpense,(imageUrl) => setSelectedImage(imageUrl))}
+          columns={getExpenseColumns((imageUrl) => setSelectedImage(imageUrl))}
           data={expenses}
+          rowsPerPage={5}
+          themeColor="#6200ea"
+          onSelectionChange={(selectedRows) => console.log(selectedRows)}
+          hidePagination={false}
+          hideSearch={false}
+          heading="Expenses"
+          idKey="id"
+          fetch={fetchExpenses}
+          lastkey={null}
+          onView={handleView}
+          onEdit={handleEditExpense}
+          onDelete={deleteExpense}
+          onAdd={() => {
+            setSelectedExpense(null);
+            setIsModalOpen(true);
+          }}
+          
+          
         />
   
         <ExpenseModal

@@ -1,18 +1,11 @@
 import React, { useState, useMemo } from "react";
-import {
-  Table,
-  Form,
-  InputGroup,
-  Pagination,
-  Row,
-  Col,
-  Card,
-} from "react-bootstrap";
-import { BsSearch, BsArrowUp, BsArrowDown } from "react-icons/bs";
+import { Table, Input, Typography, Space, Tooltip, Modal } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import type { TableRowSelection } from "antd/es/table/interface";
+import { SearchOutlined, EyeOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 
-const SearchIcon = BsSearch as unknown as React.FC;
-const UpIcon = BsArrowUp as unknown as React.FC;
-const DownIcon = BsArrowDown as unknown as React.FC;
+const { Title, Text } = Typography;
+const { confirm } = Modal;
 
 export interface Column<T> {
   key: keyof T;
@@ -25,7 +18,7 @@ interface TableProps<T> {
   columns: Column<T>[];
   data: T[];
   rowsPerPage?: number;
-  themeColor?: string;
+  themeColor?: string; // header bg color
   onSelectionChange?: (selectedRows: T[]) => void;
   hidePagination?: boolean;
   hideSearch?: boolean;
@@ -33,7 +26,14 @@ interface TableProps<T> {
   idKey?: keyof T;
   fetch?: (lastKey: string | null) => Promise<void>;
   lastkey?: string | null;
-
+  searchKeys?: (keyof T)[];
+  onAdd?: () => void;
+  // New action handlers:
+  onView?: (record: T) => void;
+  onEdit?: (record: T) => void;
+  onDelete?: (record: T) => void;
+  btnTitle?: string;
+  styleTitle?: React.CSSProperties;
 }
 
 const GenericTable = <T extends Record<string, any>>({
@@ -47,246 +47,268 @@ const GenericTable = <T extends Record<string, any>>({
   heading,
   idKey = "id" as keyof T,
   fetch,
-  lastkey
+  lastkey,
+  searchKeys,
+  onView,
+  onEdit,
+  onDelete,
+  onAdd,
+  btnTitle = "Add New",
+  styleTitle = {
+    color: "white",
+    border: "none",
+    padding: "8px 16px",
+    borderRadius: 4,
+    cursor: "pointer",
+  },
 }: TableProps<T>) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortColumn, setSortColumn] = useState<keyof T | null>(null);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedRows, setSelectedRows] = useState<T[]>([]);
 
+  // Filter data based on search query (case insensitive)
   const filteredData = useMemo(() => {
     if (!searchQuery.trim()) return data;
+  
+    const keysToSearch = searchKeys?.length ? searchKeys : columns.map((col) => col.key);
+  
     return data.filter((row) =>
-      columns.some((col) =>
-        row[col.key]
-          ?.toString()
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())
-      )
+      keysToSearch.some((key) => {
+        const value = row[key];
+        return (
+          value &&
+          value
+            .toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+        );
+      })
     );
-  }, [searchQuery, data, columns]);
+  }, [searchQuery, data, columns, searchKeys]);
+  
 
-  const sortedData = useMemo(() => {
-    if (!sortColumn) return filteredData;
-    return [...filteredData].sort((a, b) => {
-      const valA = a[sortColumn];
-      const valB = b[sortColumn];
-      if (typeof valA === "number" && typeof valB === "number") {
-        return sortOrder === "asc" ? valA - valB : valB - valA;
-      } else {
-        return sortOrder === "asc"
-          ? String(valA).localeCompare(String(valB))
-          : String(valB).localeCompare(String(valA));
-      }
-    });
-  }, [sortColumn, sortOrder, filteredData]);
+  // Build Ant Design columns from your columns + add Actions column
+// Base table columns
+const antdColumns: ColumnsType<T> = [
+  ...columns.map((col) => ({
+    title: (
+      <div
+        style={{
+          userSelect: "none",
+          cursor: col.sortable ? "pointer" : "default",
+          color: "black",
+          fontWeight: 600,
+        }}
+      >
+        {col.title}
+      </div>
+    ),
+    dataIndex: col.key as string,
+    key: col.key as string,
+    sorter: col.sortable
+      ? ((a: T, b: T): number => {
+          const valA: any = a[col.key];
+          const valB: any = b[col.key];
+          if (typeof valA === "number" && typeof valB === "number") {
+            return valA - valB;
+          }
+          return String(valA).localeCompare(String(valB));
+        })
+      : undefined,
+    render: (_: any, record: T): React.ReactNode =>
+      col.render ? col.render(record) : record[col.key],
+  })),
 
-  const totalPages = Math.ceil(sortedData?.length / rowsPerPage);
-  const paginatedData = hidePagination
-    ? sortedData
-    : sortedData?.slice(
-        (currentPage - 1) * rowsPerPage,
-        currentPage * rowsPerPage
-      );
-
-  const handleSort = (columnKey: keyof T) => {
-    if (sortColumn === columnKey) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortColumn(columnKey);
-      setSortOrder("asc");
-    }
-  };
-
-  const toggleRowSelection = (row: T) => {
-    let newSelectedRows = [...selectedRows];
-    if (selectedRows.some((selected) => selected[idKey] === row[idKey])) {
-      newSelectedRows = newSelectedRows.filter(
-        (selected) => selected[idKey] !== row[idKey]
-      );
-    } else {
-      newSelectedRows.push(row);
-    }
-    setSelectedRows(newSelectedRows);
-    if (onSelectionChange) onSelectionChange(newSelectedRows);
-  };
-
-  const toggleAllSelection = () => {
-    if (selectedRows.length === paginatedData.length) {
-      setSelectedRows([]);
-      if (onSelectionChange) onSelectionChange([]);
-    } else {
-      setSelectedRows([...paginatedData]);
-      if (onSelectionChange) onSelectionChange([...paginatedData]);
-    }
-  };
-
-  const renderPagination = () => {
-    const getPageRange = () => {
-      const range: (number | "...")[] = [];
-      const delta = 1;
-
-      if (totalPages <= 7) {
-        return Array.from({ length: totalPages }, (_, i) => i + 1);
-      }
-
-      const left = Math.max(currentPage - delta, 2);
-      const right = Math.min(currentPage + delta, totalPages - 1);
-
-      range.push(1);
-      if (left > 2) range.push("...");
-
-      for (let i = left; i <= right; i++) {
-        range.push(i);
-      }
-
-      if (right < totalPages - 1) range.push("...");
-      range.push(totalPages);
-
-      return range;
-    };
-
-    const pagesToDisplay = getPageRange();
-
-    return (
-      <Pagination className="justify-content-end">
-        <Pagination.Prev
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-        />
-        
-        {pagesToDisplay.map((page, idx) =>
-          page === "..." ? (
-            <Pagination.Ellipsis key={idx} />
-          ) : (
-            <Pagination.Item
-              key={page}
-              active={currentPage === page}
-              onClick={() => setCurrentPage(page)}
+  // Conditionally add Actions column
+  ...(onView || onEdit || onDelete
+    ? [
+        {
+          title: (
+            <div
+              style={{
+                userSelect: "none",
+                color: "black",
+                fontWeight: 600,
+                textAlign: "center",
+              }}
             >
-              {page}
-            </Pagination.Item>
-          )
-        )}
-        
-        <Pagination.Next
-  disabled={!lastkey} // Disable if there's no lastkey
-  onClick={async () => {
-    if (lastkey && fetch) {
-      await fetch(lastkey);
-      setCurrentPage((prev) => prev + 1);
-    }
-  }}
-/>
+              Actions
+            </div>
+          ),
+          key: "actions",
+          fixed: 'right' as const,
+          width: 130,
+          render: (_: any, record: T) => (
+            <Space
+              size="middle"
+              style={{ justifyContent: "center", display: "flex" }}
+            >
+              {onView && (
+                <Tooltip title="View">
+                  <EyeOutlined
+                    style={{ color: "#1890ff", cursor: "pointer" }}
+                    onClick={() => onView(record)}
+                  />
+                </Tooltip>
+              )}
+              {onEdit && (
+                <Tooltip title="Edit">
+                  <EditOutlined
+                    style={{ color: "#52c41a", cursor: "pointer" }}
+                    onClick={() => onEdit(record)}
+                  />
+                </Tooltip>
+              )}
+              {onDelete && (
+                <Tooltip title="Delete">
+                  <DeleteOutlined
+                    style={{ color: "#ff4d4f", cursor: "pointer" }}
+                    onClick={() => {
+                      confirm({
+                        title: "Are you sure you want to delete this item?",
+                        icon: <ExclamationCircleOutlined />,
+                        okText: "Yes",
+                        okType: "danger",
+                        cancelText: "No",
+                        onOk() {
+                          onDelete(record);
+                        },
+                      });
+                    }}
+                  />
+                </Tooltip>
+              )}
+            </Space>
+          ),
+        },
+      ]
+    : []),
+];
 
-      </Pagination>
-    );
+
+  // Row selection config
+  interface RowSelectionChangeParams<T> {
+    selectedRowKeys: React.Key[];
+    selectedRows: T[];
+  }
+
+  interface RowSelectionCheckboxProps<T> {
+    name: string;
+  }
+
+  const rowSelection: TableRowSelection<T> = {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: T[]): void => {
+      if (onSelectionChange) onSelectionChange(selectedRows);
+    },
+    getCheckboxProps: (record: T): RowSelectionCheckboxProps<T> => ({
+      name: String(record[idKey]),
+    }),
   };
+
+  // Pagination config
+  interface PaginationConfig {
+    current: number;
+    pageSize: number;
+    total: number;
+    showSizeChanger: boolean;
+    onChange: (page: number) => void;
+    showTotal: (total: number, range: [number, number]) => string;
+    showQuickJumper: boolean;
+  }
+
+  const paginationConfig: false | PaginationConfig = hidePagination
+    ? false
+    : {
+        current: currentPage,
+        pageSize: rowsPerPage,
+        total: filteredData.length,
+        showSizeChanger: false,
+        onChange: (page: number) => setCurrentPage(page),
+        showTotal: (total: number, range: [number, number]) =>
+          `Showing ${range[0]}-${range[1]} of ${total} results`,
+        showQuickJumper: true,
+      };
 
   return (
-    <Card className="shadow-sm">
-      <Card.Body>
-        {heading && <Card.Title className="text-center mb-4">{heading}</Card.Title>}
+    <div>
+   <div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  }}
+>
+  {!hideSearch && (
+    <Input
+      prefix={<SearchOutlined />}
+      placeholder="Search..."
+      value={searchQuery}
+      onChange={(e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1);
+      }}
+      style={{ maxWidth: 300 }}
+      allowClear
+    />
+  )}
 
-        {!hideSearch && (
-          <InputGroup className="mb-3">
-            <InputGroup.Text>
-              <SearchIcon />
-            </InputGroup.Text>
-            <Form.Control
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </InputGroup>
-        )}
+  {/* Example right-side button */}
+  <button
+    style={styleTitle}
+    onClick={() => {
+      if (onAdd) {
+        onAdd();
+      } else {
+        console.log("Add button clicked");
+      }
+    }}
+  >
+  {btnTitle}
+  </button>
+</div>
 
-        <div className="table-responsive">
-          <Table striped bordered hover>
-            <thead style={{ backgroundColor: themeColor, color: "white" }}>
-              <tr>
-                <th style={{ width: "40px" }}>
-                  <Form.Check
-                    checked={
-                      selectedRows.length === paginatedData.length &&
-                      paginatedData.length > 0
-                    }
-                    onChange={toggleAllSelection}
-                  />
-                </th>
-                {columns.map((col) => (
-                  <th
-                    key={col.key as string}
-                    onClick={() => col.sortable && handleSort(col.key)}
-                    style={{ cursor: col.sortable ? "pointer" : "default" }}
-                  >
-                    <div className="d-flex justify-content-between align-items-center">
-                      {col.title}
-                      {col.sortable && (
-                        <span>
-                          {sortColumn === col.key ? (
-                            sortOrder === "asc" ? (
-                              <UpIcon />
-                            ) : (
-                              <DownIcon />
-                            )
-                          ) : (
-                            <span style={{ width: "16px", display: "inline-block" }} />
-                          )}
-                        </span>
-                      )}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedData.length > 0 ? (
-                paginatedData.map((row, rowIndex) => (
-                  <tr key={rowIndex}>
-                    <td>
-                      <Form.Check
-                        checked={selectedRows.some(
-                          (selected) => selected[idKey] === row[idKey]
-                        )}
-                        onChange={() => toggleRowSelection(row)}
-                      />
-                    </td>
-                    {columns.map((col) => (
-                      <td key={col.key as string}>
-                        {col.render ? col.render(row) : row[col.key]}
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={columns.length + 1} className="text-center">
-                    No data found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </Table>
-        </div>
+<div
+  style={{
+    overflowX: "auto",
+    scrollbarWidth: "none", // Firefox
+    msOverflowStyle: "none", // IE/Edge
+  }}
+  className="hide-scrollbar" // Add this class name
+>
+      <Table<T>
+        rowKey={(record) => String(record[idKey])}
+        columns={antdColumns}
+        dataSource={filteredData}
+        rowSelection={rowSelection}
+        pagination={paginationConfig}
+        bordered
+        scroll={{ x: "max-content" }}
+        style={{
+          borderRadius: 10,
+          overflow: "hidden",
+          boxShadow:
+            "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06)",
+            
+        }}
+        onHeaderRow={() => ({
+          style: {
+            backgroundColor: themeColor,
+            color: "black",
+            fontWeight: 600,
+            fontSize: 16,
+          },
+        })}
+      />
+       </div>
 
-        {!hidePagination && (
-          <Row className="d-flex align-items-center justify-content-between">
-            <Col>
-              <div className="text-muted">
-                Showing {(currentPage - 1) * rowsPerPage + 1} to{" "}
-                {Math.min(currentPage * rowsPerPage, sortedData?.length)} of{" "}
-                {sortedData?.length} results
-              </div>
-            </Col>
-            <Col xs="auto">
-              {renderPagination()}
-            </Col>
-          </Row>
-        )}
-      </Card.Body>
-    </Card>
+{/* 🔽 Extra style to hide WebKit scrollbar */}
+<style>{`
+  div::-webkit-scrollbar {
+    display: none;
+  }
+    
+`}</style>
+    </div>
   );
 };
 

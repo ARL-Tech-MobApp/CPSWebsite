@@ -1,0 +1,17 @@
+.custom-sider {
+    position: sticky !important;
+    top: 0;
+    height: 100vh;
+    z-index: 99;
+  }
+
+  .hide-scrollbar ::-webkit-scrollbar {
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    .custom-sider {
+      display: none !important;
+    }
+  }
+  
