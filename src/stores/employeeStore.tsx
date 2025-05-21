@@ -45,9 +45,9 @@ export const useEmployeeStore = create<EmployeeState>((set, get) => ({
     try {
       const response = await axios.get(
         `https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/get-all-employees`,
-        {
-          params: { page, limit, search },
-        }
+        // {
+        //   params: { page, limit, search },
+        // }
       );
       set({
         employees: response.data.employees.sort((a: { createdAt: moment.MomentInput; }, b: { createdAt: moment.MomentInput; }) =>

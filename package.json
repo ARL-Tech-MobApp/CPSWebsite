@@ -32,6 +32,7 @@
     "react-bootstrap-icons": "^1.11.5",
     "react-countup": "^6.5.3",
     "react-dom": "^18.2.0",
+    "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.56.1",
     "react-icons": "^5.5.0",
     "react-native": "^0.72.4",
@@ -40,6 +41,7 @@
     "react-scripts": "^5.0.1",
     "react-spinners": "^0.16.1",
     "stream-http": "^3.2.0",
+    "tesseract.js": "^6.0.1",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4",
     "zustand": "^5.0.4"
@@ -70,6 +72,7 @@
   },
   "devDependencies": {
     "@types/aos": "^3.0.7",
+    "@types/react-dropzone": "^4.2.2",
     "cross-env": "^7.0.3"
   }
 }
