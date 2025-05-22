@@ -56,6 +56,7 @@ const TabContentRenderer: React.FC<TabContentRendererProps> = ({
             : [])
         )}
         data={data}
+        rowsPerPage={10}
         heading={config.tableConfig.heading}
         searchKeys={tabTarget === "#nav-home"?["fullName", "phoneNumber"]:["vendorName", "employeeId", "whatsappNumber","pincode"]}
         onView={handlers.handleView}

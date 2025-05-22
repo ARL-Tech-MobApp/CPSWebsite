@@ -1,197 +1,220 @@
-import React, { useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import axios, { AxiosError, AxiosResponse } from "axios";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import { useAuthStore } from "../stores/useAuthStore";
-import { useNavigate } from "react-router-dom";
-import { sendEmployeeCredentials } from "../utils/helper";
+import React from "react";
+import { useForm, SubmitHandler,Controller  } from "react-hook-form";
+import { Form, Input, Button, Typography, Alert } from "antd";
+import { EyeInvisibleOutlined, EyeTwoTone, LoginOutlined } from "@ant-design/icons";
+import { useLogin } from "../hooks/useLogin";
+import { LoginFormData } from "../types/authType";
+import { motion } from "framer-motion";
 
-interface LoginFormData {
-  employeeId: string;
-  password: string;
-}
+const { Title, Text } = Typography;
 
-interface ApiResponse {
-  refreshToken: string;
-  accessToken: string;
-  message?: string;
-  user?: {
-    id: string;
-    fullName: string;
-    department: string;
-    position: string;
-    email: string;
-  };
-}
+const containerVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+};
 
 const SignIn: React.FC = () => {
-  const navigate = useNavigate();
-  const { setTokens } = useAuthStore();
+  const {
+    isLoading,
+    apiError,
+    isSuccess,
+    onSubmit,
+  } = useLogin();
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    control,
+    formState: { errors }, // you can keep errors but won't be used for validation now
   } = useForm<LoginFormData>();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [apiError, setApiError] = useState<string>("");
-  const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
-    setIsLoading(true);
-    setApiError("");
-
-    try {
-      const response: AxiosResponse<ApiResponse> = await axios.post(
-        "https://fxosysucf1.execute-api.ap-south-1.amazonaws.com/Prod/login",
-        {
-          id: data.employeeId,
-          password: data.password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      // Replace with actual token names from your API response
-      const accessToken = response?.data?.accessToken;
-      const refreshToken = response?.data?.refreshToken; // Replace with real one if available
-
-      if (accessToken) {
-        await setTokens(accessToken, refreshToken);
-        setIsSuccess(true);
-      }
-
-      console.log("Login successful:", response.data);
-      setIsSuccess(true);
-    } catch (error) {
-      const axiosError = error as AxiosError<ApiResponse>;
-      setApiError(
-        axiosError.response?.data?.message ||
-          axiosError.message ||
-          "Login failed. Please try again."
-      );
-    } finally {
-      setIsLoading(false);
-    }
+  const handleFormSubmit: SubmitHandler<LoginFormData> = (data) => {
+    onSubmit(data);
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center min-vh-100 bg-light">
-      <div
-        className="card shadow-sm p-4"
-        style={{ width: "100%", maxWidth: "400px" }}
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "linear-gradient(to right, #e0f7fa, #ffffff)",
+        padding: "2rem",
+      }}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        style={{
+          display: "flex",
+          maxWidth: "1000px",
+          width: "100%",
+          background: "#fff",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+          borderRadius: 20,
+          overflow: "hidden",
+          flexDirection: "row",
+          flexWrap: "wrap",
+        }}
       >
-        <div className="card-body">
-          <h2 className="text-center mb-4 text-primary">Employee Sign In</h2>
+        {/* Left Side – Sign In */}
+        <motion.div
+          initial={{ x: -50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          style={{
+            flex: "1 1 400px",
+            padding: "60px 40px",
+            background: "rgba(255, 255, 255, 0.9)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            minWidth: 0,
+          }}
+        >
+          <Title level={3} style={{ marginBottom: 10 }}>Welcome Back 👋</Title>
+          <Text type="secondary" style={{ marginBottom: 30 }}>
+            Sign in with your employee credentials
+          </Text>
 
           {isSuccess ? (
-            <div className="alert alert-success text-center">
-              Login successful! Redirecting...
-            </div>
+            <Alert message="Login successful! Redirecting..." type="success" showIcon />
           ) : (
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <Form
+              layout="vertical"
+              onFinish={handleSubmit(handleFormSubmit)}
+              autoComplete="off"
+              style={{ maxWidth: 400, width: "100%" }}
+            >
               {apiError && (
-                <div className="alert alert-danger mb-3">{apiError}</div>
+                <Alert
+                  message={apiError}
+                  type="error"
+                  showIcon
+                  style={{ marginBottom: 16 }}
+                />
               )}
 
-              <div className="mb-3">
-                <label htmlFor="employeeId" className="form-label">
-                  Employee ID
-                </label>
-                <input
-                  id="employeeId"
-                  type="text"
-                  className={`form-control ${
-                    errors.employeeId ? "is-invalid" : ""
-                  }`}
-                  {...register("employeeId", {
-                    required: "Employee ID is required",
-                    // pattern: {
-                    //   value: /^EMP\d{5,}$/,
-                    //   message: "ID must start with EMP followed by numbers",
-                    // },
-                  })}
-                  placeholder="e.g.EMP12345"
-                />
-                {errors.employeeId && (
-                  <div className="invalid-feedback">
-                    {errors.employeeId.message}
-                  </div>
-                )}
-              </div>
+<Form.Item
+  label={<Text strong>Employee ID</Text>}
+  validateStatus={errors.employeeId ? "error" : ""}
+  help={errors.employeeId?.message}
+>
+  <Controller
+    name="employeeId"
+    control={control}
+    rules={{ required: "Employee ID is required" }}
+    render={({ field }) => (
+      <Input
+        {...field}
+        size="large"
+        placeholder="e.g. EMP12345"
+        style={{ borderRadius: 10 }}
+      />
+    )}
+  />
+</Form.Item>
 
-              <div className="mb-4 position-relative">
-                <label htmlFor="password" className="form-label">
-                  Password
-                </label>
-                <div className="input-group">
-                  <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    className={`form-control ${
-                      errors.password ? "is-invalid" : ""
-                    }`}
-                    {...register("password", {
-                      required: "Password is required",
-                      minLength: {
-                        value: 6,
-                        message: "Password must be at least 6 characters",
-                      },
-                    })}
-                    placeholder="Enter Your Password"
-                  />
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary"
-                    onClick={togglePasswordVisibility}
-                    aria-label={
-                      showPassword ? "Hide password" : "Show password"
-                    }
-                  >
-                    <i
-                      className={`bi ${
-                        showPassword ? "bi-eye-slash" : "bi-eye"
-                      }`}
-                    ></i>
-                  </button>
-                </div>
-                {errors.password && (
-                  <div className="invalid-feedback d-block">
-                    {errors.password.message}
-                  </div>
-                )}
-              </div>
 
-              <button
-                type="submit"
-                className="btn btn-primary w-100 py-2"
-                disabled={isLoading}
+<Form.Item
+  label={<Text strong>Password</Text>}
+  validateStatus={errors.password ? "error" : ""}
+  help={errors.password?.message}
+>
+  <Controller
+    name="password"
+    control={control}
+    rules={{
+      required: "Password is required",
+      minLength: { value: 6, message: "At least 6 characters" },
+    }}
+    render={({ field }) => (
+      <Input.Password
+        {...field}
+        size="large"
+        placeholder="Enter your password"
+        iconRender={(visible) =>
+          visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+        }
+        style={{ borderRadius: 10 }}
+      />
+    )}
+  />
+</Form.Item>
+
+
+              <Button
+                type="primary"
+                htmlType="submit"
+                block
+                size="large"
+                loading={isLoading}
+                style={{
+                  marginTop: 20,
+                  borderRadius: 10,
+                  background: "linear-gradient(90deg, #1890ff, #40a9ff)",
+                  fontWeight: 600,
+                }}
               >
-                {isLoading ? (
-                  <>
-                    <span
-                      className="spinner-border spinner-border-sm me-2"
-                      role="status"
-                      aria-hidden="true"
-                    ></span>
-                    Signing In...
-                  </>
-                ) : (
-                  "Sign In"
-                )}
-              </button>
-            </form>
+                Sign In
+              </Button>
+            </Form>
           )}
-        </div>
-      </div>
-    </div>
+        </motion.div>
+
+        {/* Right Side – Icon & Message */}
+        <motion.div
+          initial={{ x: 50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          style={{
+            flex: "1 1 400px",
+            background: "linear-gradient(to bottom right, #1890ff, #40a9ff)",
+            color: "#fff",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "40px",
+            minWidth: 0,
+          }}
+        >
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.6 }}
+            style={{
+              background: "#fff",
+              borderRadius: "50%",
+              width: 120,
+              height: 120,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+              marginBottom: 30,
+            }}
+          >
+            <LoginOutlined style={{ fontSize: 50, color: "#1890ff" }} />
+          </motion.div>
+          <Title level={2} style={{ color: "#fff", textAlign: "center" }}>
+            Employee Portal
+          </Title>
+          <Text style={{ color: "#e0f0ff", fontSize: 16, textAlign: "center", marginTop: 12 }}>
+            Access your dashboard, tools, and communication hub in one place.
+          </Text>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 

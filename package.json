@@ -23,6 +23,7 @@
     "axios": "^1.9.0",
     "bootstrap": "^5.3.5",
     "bootstrap-icons": "^1.11.3",
+    "framer-motion": "^12.12.1",
     "html2pdf.js": "^0.10.3",
     "https-browserify": "^1.0.0",
     "mailtrap": "^4.1.0",

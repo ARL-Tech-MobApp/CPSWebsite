@@ -27,10 +27,12 @@ import ImagePreviewModal from "./component/ImagePreviewModal";
 import ViewShow from "../../components/ViewShow";
 import FooterBar from "../../components/Footer";
 import "../../styles/EmployeeDashboard.css";
+import { useAuthStore } from "../../stores/useAuthStore";
 
 const { Header, Sider, Footer } = Layout;
 
 const EmployeeDashboard: React.FC = () => {
+  const { logout } = useAuthStore();
   const [collapsed, setCollapsed] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [theme, setTheme] = useState("light");
@@ -196,7 +198,13 @@ const EmployeeDashboard: React.FC = () => {
               checked={theme === "dark"}
             />
             <Avatar src="/default-avatar.png" />
-            <Button type="link" icon={<LogoutOutlined />} onClick={() => console.log("Logout")}>
+            <Button type="link" icon={<LogoutOutlined />} onClick={async () => {
+                    try {
+                      await logout();
+                    } catch (error) {
+                      console.error("Logout failed:", error);
+                    }
+                  }}>
               Logout
             </Button>
           </div>

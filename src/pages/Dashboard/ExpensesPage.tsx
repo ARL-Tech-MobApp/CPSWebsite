@@ -81,7 +81,7 @@ purpose:data?.purpose || "",
         <GenericTable
           columns={getExpenseColumns((imageUrl) => setSelectedImage(imageUrl))}
           data={expenses}
-          rowsPerPage={5}
+          rowsPerPage={11}
           themeColor="#6200ea"
           onSelectionChange={(selectedRows) => console.log(selectedRows)}
           hidePagination={false}

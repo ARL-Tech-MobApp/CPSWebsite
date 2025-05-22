@@ -18,8 +18,6 @@ export const adminTabs: TabConfig[] = [
   { label: "Rating", target: "#nav-ratings", active: false, role: "admin" },
   { label: "Employee Handbook", target: "#nav-handbook", active: false, role: "admin" },
   { label: "Salary Slip", target: "#nav-salaries", active: false, role: "admin" },
-  { label: "Log In", target: "#nav-login", active: false, role: "admin" },
-  { label: "Log Out", target: "#nav-logout", active: false, role: "admin" },
 ];
 
 export const employeeTabs: TabConfig[] = [
@@ -39,6 +37,4 @@ export const employeeTabs: TabConfig[] = [
   { label: "Rating", target: "#nav-ratings", active: false, role: "employee" },
   { label: "Employee Handbook", target: "#nav-handbook", active: false, role: "employee" },
   { label: "Salary Slip", target: "#nav-salaries", active: false, role: "employee" },
-  { label: "Log In", target: "#nav-login", active: false, role: "employee" },
-  { label: "Log Out", target: "#nav-logout", active: false, role: "employee" },
 ]; 

@@ -55,6 +55,7 @@ const GenericTable = <T extends Record<string, any>>({
   onAdd,
   btnTitle = "Add New",
   styleTitle = {
+    backgroundColor: themeColor,
     color: "white",
     border: "none",
     padding: "8px 16px",
