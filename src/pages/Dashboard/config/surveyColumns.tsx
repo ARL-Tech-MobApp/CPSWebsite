@@ -4,9 +4,6 @@ import { Button } from "react-bootstrap";
 import moment from "moment";
 
 export const getSurveyColumns = (
-  handleView: (row: Survey) => void,
-  handleEditVisitor: (row: Survey) => void,
-  deleteSurvey: (id: string) => void,
   userProfile: any,
   touchedSurveyIds: string[],
   setShowEmployeeDetailsModal: (details: any) => void,
@@ -102,35 +99,6 @@ export const getSurveyColumns = (
   { key: "pincode", title: "Pincode" },
   { key: "address", title: "Address" },
   { key: "createdAt", title: "Created At" },
-  {
-    key: "actions",
-    title: "Actions",
-    render: (row) => (
-      <div>
-        <Button
-          variant="primary"
-          size="sm"
-          className="me-2 mb-2"
-          onClick={() => handleView(row)}
-        >
-          View
-        </Button>
-        <Button
-          variant="primary"
-          size="sm"
-          className="me-2 mb-2"
-          onClick={() => handleEditVisitor(row)}
-        >
-          Edit
-        </Button>
-        <Button
-          variant="danger"
-          size="sm"
-          onClick={() => deleteSurvey(row.id || "")}
-        >
-          Delete
-        </Button>
-      </div>
-    ),
-  },
+  
 ];
+
