@@ -3,8 +3,10 @@ import { getEmployeeColumns } from "./employeeColumns";
 import { getSurveyColumns } from "./surveyColumns";
 import EmployeeManagement from "../../../components/EmployeeManagement";
 import VisitorManagement from "../../../components/VisitorManagement";
-import DailyWorksheet from "../../../components/DailyWorksheet";
+import DailyWorksheet from "../DailyWorksheet";
 import ExpensesPage from "../ExpensesPage";
+import ProfileTabContent from "../component/ProfileTabContent";
+import MyAttendance from "../MyAttendance";
 
 export type TabContentConfig = {
     component: React.ComponentType<any>;
@@ -48,5 +50,12 @@ export const tabContentMap: Record<string, TabContentConfig> = {
   "#nav-expenses": {
     component:  ExpensesPage,
     
-  }
+  },
+  "profile": {
+    component: ProfileTabContent,
+  },
+  "#nav-attendance": {
+    component: MyAttendance,
+  },
+  
 };

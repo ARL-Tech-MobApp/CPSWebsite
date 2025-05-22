@@ -391,13 +391,6 @@ console.log("hdsffjds",formData)
 
   return (
     <>
-      <Button
-        variant="primary"
-        onClick={() => setShowModal(true)}
-        className="mb-3"
-      >
-        <PersonPlusIcon /> Add Employee
-      </Button>
 
       <Modal show={showModal} onHide={resetForm} size="lg">
         <Modal.Header closeButton>

@@ -710,15 +710,6 @@ const VisitorManagement: React.FC<Props> = ({
 
   return (
     <>
-      {userProfile?.isAdmin === "true" ? null : (
-        <Button
-          variant="primary"
-          onClick={() => setShowModal(true)}
-          className="mb-3"
-        >
-          Add Vendor Details
-        </Button>
-      )}
       <Modal show={showModal} onHide={resetForm}>
         <Modal.Header closeButton>
           <Modal.Title>Vendor Survey</Modal.Title>

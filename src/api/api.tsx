@@ -24,11 +24,11 @@ interface ApiInterface {
     delete<T = any, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig): Promise<R>;
 }
 
-const Api: ApiInterface = {
+export const Api: ApiInterface = {
     get: (url, config = {}) => instance.get(url, config),
     post: (url, data, config = {}) => instance.post(url, data, config),
     put: (url, data, config = {}) => instance.put(url, data, config),
     delete: (url, config = {}) => instance.delete(url, config),
 };
 
-export default Api;
+export const ITEMS_PER_PAGE = 5;
