@@ -7,6 +7,11 @@ import DailyWorksheet from "../DailyWorksheet";
 import ExpensesPage from "../ExpensesPage";
 import ProfileTabContent from "../component/ProfileTabContent";
 import MyAttendance from "../MyAttendance";
+import ApplyLeave from "../ApplyLeave";
+import HolidayCalendar from "../HolidayCalendar";
+import HandBook from "../HandBook";
+import Task from "../Task";
+
 
 export type TabContentConfig = {
     component: React.ComponentType<any>;
@@ -57,5 +62,16 @@ export const tabContentMap: Record<string, TabContentConfig> = {
   "#nav-attendance": {
     component: MyAttendance,
   },
-  
+  "#nav-leaves": {
+    component:ApplyLeave,
+  },
+  "#nav-calendar": {
+    component:HolidayCalendar,
+  },
+  "#nav-handbook": {
+    component:HandBook,
+  },
+  "#nav-tasks": {
+    component:Task,
+  },
 };
