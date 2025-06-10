@@ -37,7 +37,6 @@ interface Props {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   isEditMode?: boolean;
   setIsEditMode?: React.Dispatch<React.SetStateAction<boolean>>;
-
 }
 
 type FormControlElement =
@@ -52,7 +51,7 @@ const EmployeeManagement: React.FC<Props> = ({
   isEditMode,
   setIsEditMode,
 }) => {
-console.log("hdsffjds",formData)
+  console.log("hdsffjds", formData);
 
   const [isUploading, setIsUploading] = useState(false);
   const { addEmployee, updateEmployee } = useEmployeeStore();
@@ -163,7 +162,7 @@ console.log("hdsffjds",formData)
       <Row className="mb-3">
         <Col md={6}>
           <Form.Group>
-            <Form.Label>EmployeeId*</Form.Label>
+            <Form.Label>Employee ID*</Form.Label>
             <Form.Control
               type="text"
               name="id"
@@ -205,6 +204,9 @@ console.log("hdsffjds",formData)
               <option value="Digital Marketing">Digital Marketing</option>
               <option value="Finance">Finance</option>
               <option value="HR">HR</option>
+              <option value="General">General</option>
+              <option value="Operation & Admin">Operation & Admin</option>
+
               {/* Add more departments as needed */}
             </Form.Control>
           </Form.Group>
@@ -230,6 +232,12 @@ console.log("hdsffjds",formData)
               <option value="Graphic Desingner">Graphic Desingner</option>
               <option value="Accounts Executive">Accounts Executive</option>
               <option value="CareTaker">CareTaker</option>
+              <option value="Receptionist cum Telecaller">
+                Receptionist cum Telecaller
+              </option>
+              <option value="FSA(Field Sales Associates)">
+                FSA(Field Sales Associates)
+              </option>
               {/* Add more positions as needed */}
             </Form.Control>
           </Form.Group>
@@ -249,11 +257,11 @@ console.log("hdsffjds",formData)
               <option value="">Select City</option>
               <option value="Bhubaneswar">Bhubaneswar</option>
               <option value="Bhubaneswar(HO)">Bhubaneswar(HO)</option>
-              <option value="Kolkata">Kolkata</option>
+              <option value="Bangalore">Bangalore</option>
               <option value="Vishakhapatnam">Vishakhapatnam</option>
               <option value="Hyderabad">Hyderabad</option>
               <option value="Pune">Pune</option>
-              <option value="Ahmedabad">Ahmedabad</option>
+              <option value="Chennai">Chennai</option>
               <option value="Raipur">Raipur</option>
               {/* Add more positions as needed */}
             </Form.Control>
@@ -287,18 +295,22 @@ console.log("hdsffjds",formData)
               name="email"
               value={formData.email}
               onChange={handleInputChange}
+              pattern="^[\w-.]+@([\w-]+\.)+[\w-]{2,}$"
               required
             />
           </Form.Group>
         </Col>
         <Col md={6}>
           <Form.Group>
-            <Form.Label>Phone Number</Form.Label>
+            <Form.Label>Phone Number*</Form.Label>
             <Form.Control
               type="tel"
               name="phone"
               value={formData.phone || ""}
               onChange={handleInputChange}
+              pattern="\d{10}"
+              maxLength={10}
+              inputMode="numeric"
               required
             />
           </Form.Group>
@@ -306,7 +318,7 @@ console.log("hdsffjds",formData)
       </Row>
 
       <Form.Group className="mb-3">
-        <Form.Label>Address</Form.Label>
+        <Form.Label>Address*</Form.Label>
         <Form.Control
           as="textarea"
           rows={3}
@@ -321,7 +333,7 @@ console.log("hdsffjds",formData)
 
   const renderStepThree = () => (
     <>
-      <h5 className="mb-4">Employment Details</h5>
+      <h5 className="mb-4">Employee ID: {formData.id}</h5>
       <Row className="mb-3">
         <Col md={6}>
           <Form.Group>
@@ -392,10 +404,9 @@ console.log("hdsffjds",formData)
 
   return (
     <>
-
       <Modal show={showModal} onHide={resetForm} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Employee Registration</Modal.Title>
+          <Modal.Title>Employee Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>

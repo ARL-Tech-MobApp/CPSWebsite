@@ -14,8 +14,9 @@ import { useAuthStore } from "../stores/useAuthStore";
 import axios from "axios";
 import { InfoCircle } from "react-bootstrap-icons";
 
-// const UploadIcon = BsUpload as unknown as React.FC;
-// const CheckIcon = BsCheckCircle as unknown as React.FC;
+
+const UploadIcon = BsUpload as unknown as React.FC;
+const CheckIcon = BsCheckCircle as unknown as React.FC;
 const ArrowLeftIcon = BsArrowLeft as unknown as React.FC;
 
 type VisitorType =
@@ -111,10 +112,20 @@ const VisitorManagement: React.FC<Props> = ({
         [name]: value as ShopStatus,
       }));
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+      // Add this block for pincode
+      if (name === "pincode") {
+        let onlyDigits = value.replace(/[^0-9]/g, "");
+        let formatted = onlyDigits.replace(/(\d{6})(?=\d)/g, "$1,");
+        setFormData((prev) => ({
+          ...prev,
+          pincode: formatted,
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      }
     }
   };
   // Handle selecting WhatsApp number
@@ -164,15 +175,25 @@ const VisitorManagement: React.FC<Props> = ({
             // return "Description is required.";
           }
       }
-      if (!/^\d{6}$/.test(formData.pincode || ""))
-        return "Enter valid 6-digit pincode.";
-      if (!formData.pincode?.trim()) return "Pincode is required.";
+
 
       if (
         formData.visitorType.includes("other") &&
         (!formData.otherVisitorType || !formData.otherVisitorType.trim())
       ) {
         return "Please specify the 'Other' vendor type.";
+
+      if (!formData.pincode?.trim()) return "Pincode is required.";
+      const pincodes = formData.pincode
+        .split(",")
+        .map((p) => p.trim())
+        .filter(Boolean);
+      if (pincodes.length === 0) return "At least one pincode is required.";
+      for (const pin of pincodes) {
+        if (!/^\d{6}$/.test(pin)) {
+          return `Invalid pincode: ${pin}. Each pincode must be 6 digits.`;
+        }
+
       }
 
       if (
@@ -336,9 +357,10 @@ const VisitorManagement: React.FC<Props> = ({
             { value: "construction_material", label: "Construction Material" },
             { value: "cement_steel_store", label: "Cement & Steel Store" },
             { value: "borewell", label: "Borewell" },
+
             { value: "marbal_tile_store", label: "Marble & Tile Store" },
             { value: "concrete_product", label: "Concrete Product" },
-            { value: "other", label: "Other" },
+            { value: "other", label: "Other Material Type" },
           ].map((type) => (
             <Col key={type.value} sm={6} className="mb-2">
               <Form.Group controlId={`visitor-type-${type.value}`}>
@@ -401,7 +423,7 @@ const VisitorManagement: React.FC<Props> = ({
       return (
         <>
           <Form.Group className="mb-3">
-            <Form.Label>Upload Visiting Card</Form.Label>
+            <Form.Label>Add Visiting Card/Photo</Form.Label>
             <Form.Control
               type="file"
               name="visitingCard"
@@ -491,7 +513,7 @@ const VisitorManagement: React.FC<Props> = ({
           <Row className="mb-3">
             <Col md={6}>
               <Form.Group>
-                <Form.Label>Vendor Name</Form.Label>
+                <Form.Label>Vendor Company Name</Form.Label>
                 <Form.Control
                   type="text"
                   name="vendorName"
@@ -524,6 +546,9 @@ const VisitorManagement: React.FC<Props> = ({
                   name="contact1"
                   value={formData.contact1 || ""}
                   onChange={handleInputChange}
+                  pattern="\d{10}"
+                  maxLength={10}
+                  inputMode="numeric"
                   required
                 />
                 <Form.Check
@@ -545,6 +570,9 @@ const VisitorManagement: React.FC<Props> = ({
                   name="contact2"
                   value={formData.contact2 || ""}
                   onChange={handleInputChange}
+                  pattern="\d{10}"
+                  maxLength={10}
+                  inputMode="numeric"
                 />
                 <Form.Check
                   type="radio"
