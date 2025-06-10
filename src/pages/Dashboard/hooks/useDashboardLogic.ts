@@ -112,13 +112,16 @@ export const useDashboardLogic = () => {
       setExpenses(prev => prev.filter(e => e.id !== id));
     };
   
-
+console.log("userProfile:", userProfile);
   // Computed values
   const tabsToRender = userProfile?.isAdmin === "true" ? adminTabs : employeeTabs;
   const profileFields = [
+    { label: "Employee ID", value: userProfile?.id },
     { label: "Full Name", value: userProfile?.fullName },
     { label: "Position", value: userProfile?.position },
     { label: "Department", value: userProfile?.department },
+    // { label: "Designation", value: userProfile?.designation },
+    { label: "City", value: userProfile?.city },
   ];
 
   

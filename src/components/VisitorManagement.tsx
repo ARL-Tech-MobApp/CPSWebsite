@@ -18,7 +18,6 @@ import { useAuthStore } from "../stores/useAuthStore";
 import axios from "axios";
 import { InfoCircle } from "react-bootstrap-icons";
 
-
 const UploadIcon = BsUpload as unknown as React.FC;
 const CheckIcon = BsCheckCircle as unknown as React.FC;
 const ArrowLeftIcon = BsArrowLeft as unknown as React.FC;
@@ -114,10 +113,20 @@ const VisitorManagement: React.FC<Props> = ({
         [name]: value as ShopStatus,
       }));
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+      // Add this block for pincode
+      if (name === "pincode") {
+        let onlyDigits = value.replace(/[^0-9]/g, "");
+        let formatted = onlyDigits.replace(/(\d{6})(?=\d)/g, "$1,");
+        setFormData((prev) => ({
+          ...prev,
+          pincode: formatted,
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      }
     }
   };
   // Handle selecting WhatsApp number
@@ -157,9 +166,17 @@ const VisitorManagement: React.FC<Props> = ({
           return "Description is required.";
         }
       }
-      if (!/^\d{6}$/.test(formData.pincode || ""))
-        return "Enter valid 6-digit pincode.";
-        if (!formData.pincode?.trim()) return "Pincode is required.";
+      if (!formData.pincode?.trim()) return "Pincode is required.";
+      const pincodes = formData.pincode
+        .split(",")
+        .map((p) => p.trim())
+        .filter(Boolean);
+      if (pincodes.length === 0) return "At least one pincode is required.";
+      for (const pin of pincodes) {
+        if (!/^\d{6}$/.test(pin)) {
+          return `Invalid pincode: ${pin}. Each pincode must be 6 digits.`;
+        }
+      }
 
       if (
         formData.visitorType.includes("construction_material") &&
@@ -205,7 +222,8 @@ const VisitorManagement: React.FC<Props> = ({
         whatsappNumber: formData?.whatsappNumber || "None",
         address: formData.address || "None",
         pincode: formData.pincode || "None",
-        constructionMaterials: formData.constructionMaterials?.join(",") || "None",
+        constructionMaterials:
+          formData.constructionMaterials?.join(",") || "None",
         shopStatus: formData.shopStatus || "None",
         visitingCardFileName: formData.visitingCard?.name || undefined,
       };
@@ -318,10 +336,10 @@ const VisitorManagement: React.FC<Props> = ({
             { value: "mixture_machine", label: "Mixture Machine" },
             { value: "construction_material", label: "Construction Material" },
             { value: "cement_steel_store", label: "Cement & Steel Store" },
-            { value: "local_supplier", label: "Local Supplier" },
+            { value: "local_supplier", label: "Borewell" },
             { value: "marbal_tile_store", label: "Marble & Tile Store" },
             { value: "concrete_product", label: "Concrete Product" },
-            { value: "other", label: "Other" },
+            { value: "other", label: "Other Material Type" },
           ].map((type) => (
             <Col key={type.value} sm={6} className="mb-2">
               <Form.Check
@@ -356,7 +374,10 @@ const VisitorManagement: React.FC<Props> = ({
             overlay={
               <Popover id="info-popover">
                 <Popover.Body>
-                If you have a visiting card, please upload its photo and include some details about it in the description field. If not, please fill in all the information manually.                </Popover.Body>
+                  If you have a visiting card, please upload its photo and
+                  include some details about it in the description field. If
+                  not, please fill in all the information manually.{" "}
+                </Popover.Body>
               </Popover>
             }
             rootClose
@@ -377,7 +398,7 @@ const VisitorManagement: React.FC<Props> = ({
       return (
         <>
           <Form.Group className="mb-3">
-            <Form.Label>Upload Visiting Card</Form.Label>
+            <Form.Label>Add Visiting Card/Photo</Form.Label>
             <Form.Control
               type="file"
               name="visitingCard"
@@ -467,7 +488,7 @@ const VisitorManagement: React.FC<Props> = ({
           <Row className="mb-3">
             <Col md={6}>
               <Form.Group>
-                <Form.Label>Vendor Name</Form.Label>
+                <Form.Label>Vendor Company Name</Form.Label>
                 <Form.Control
                   type="text"
                   name="vendorName"
@@ -500,6 +521,9 @@ const VisitorManagement: React.FC<Props> = ({
                   name="contact1"
                   value={formData.contact1 || ""}
                   onChange={handleInputChange}
+                  pattern="\d{10}"
+                  maxLength={10}
+                  inputMode="numeric"
                   required
                 />
                 <Form.Check
@@ -520,6 +544,9 @@ const VisitorManagement: React.FC<Props> = ({
                   name="contact2"
                   value={formData.contact2 || ""}
                   onChange={handleInputChange}
+                  pattern="\d{10}"
+                  maxLength={10}
+                  inputMode="numeric"
                 />
                 <Form.Check
                   type="radio"
@@ -550,7 +577,7 @@ const VisitorManagement: React.FC<Props> = ({
               name="address"
               value={formData.address || ""}
               onChange={handleInputChange}
-              required
+              // required
             />
           </Form.Group>
           <Form.Group className="mb-3">
