@@ -105,7 +105,8 @@ const EmployeeManagement: React.FC<Props> = ({
             salary: formData.salary?.toString() || "",
             city: formData.city || "",
           });
-          alert("Employee added successfully!");
+          alert(`${formData.id} added successfully!`);
+          // console.log(formData)
         }
         // Reset form
         setFormData({
