@@ -5,14 +5,10 @@ import {
   Form,
   Row,
   Col,
-  Card,
-  Accordion,
-  ListGroup,
-  Badge,
   OverlayTrigger,
   Popover,
 } from "react-bootstrap";
-import { BsUpload, BsCheckCircle, BsArrowLeft } from "react-icons/bs";
+import { BsArrowLeft } from "react-icons/bs";
 import { useSurveyStore } from "../stores/surveyStore";
 import { useAuthStore } from "../stores/useAuthStore";
 import axios from "axios";
@@ -51,6 +47,8 @@ interface VisitorFormData {
   pincode?: string;
   constructionMaterials?: ConstructionMaterial[];
   shopStatus?: ShopStatus;
+  otherMaterialType?: string;
+  otherVisitorType?: string; // <-- Add this
 }
 
 interface Props {
@@ -114,10 +112,20 @@ const VisitorManagement: React.FC<Props> = ({
         [name]: value as ShopStatus,
       }));
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+      // Add this block for pincode
+      if (name === "pincode") {
+        let onlyDigits = value.replace(/[^0-9]/g, "");
+        let formatted = onlyDigits.replace(/(\d{6})(?=\d)/g, "$1,");
+        setFormData((prev) => ({
+          ...prev,
+          pincode: formatted,
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      }
     }
   };
   // Handle selecting WhatsApp number
@@ -141,8 +149,10 @@ const VisitorManagement: React.FC<Props> = ({
       }
 
       if (!formData.hasVisitingCard) {
-        if (!formData.vendorName?.trim()) return "Vendor name is required.";
-        if (!formData.ownerName?.trim()) return "Owner name is required.";
+        if (!formData.vendorName?.trim() && !formData.ownerName?.trim()) {
+          return "Either Vendor name or Owner name is required.";
+        }
+        // if (!formData.ownerName?.trim()) return "Owner name is required.";
         if (!formData.contact1?.trim()) return "Primary contact is required.";
         if (!/^\d{10}$/.test(formData.contact1))
           return "Enter valid 10-digit contact.";
@@ -152,14 +162,39 @@ const VisitorManagement: React.FC<Props> = ({
         // if (!formData.whatsappNumber) {
         //   return "please select the check box for which is ur whtsappNumer.";
         // }
-        if (!formData.address?.trim()) return "Address is required.";
-        if (!formData.description?.trim()) {
-          return "Description is required.";
-        }
+        if (
+        !formData.whatsappNumber ||
+        (formData.whatsappNumber !== formData.contact1 &&
+          formData.whatsappNumber !== formData.contact2)
+      ) {
+        return "Please select which contact is your WhatsApp number.";
       }
-      if (!/^\d{6}$/.test(formData.pincode || ""))
-        return "Enter valid 6-digit pincode.";
-        if (!formData.pincode?.trim()) return "Pincode is required.";
+        if (!formData.address?.trim())
+          if (!formData.description?.trim()) {
+            // return "Address is required.";
+            // return "Description is required.";
+          }
+      }
+
+
+      if (
+        formData.visitorType.includes("other") &&
+        (!formData.otherVisitorType || !formData.otherVisitorType.trim())
+      ) {
+        return "Please specify the 'Other' vendor type.";
+
+      if (!formData.pincode?.trim()) return "Pincode is required.";
+      const pincodes = formData.pincode
+        .split(",")
+        .map((p) => p.trim())
+        .filter(Boolean);
+      if (pincodes.length === 0) return "At least one pincode is required.";
+      for (const pin of pincodes) {
+        if (!/^\d{6}$/.test(pin)) {
+          return `Invalid pincode: ${pin}. Each pincode must be 6 digits.`;
+        }
+
+      }
 
       if (
         formData.visitorType.includes("construction_material") &&
@@ -205,7 +240,8 @@ const VisitorManagement: React.FC<Props> = ({
         whatsappNumber: formData?.whatsappNumber || "None",
         address: formData.address || "None",
         pincode: formData.pincode || "None",
-        constructionMaterials: formData.constructionMaterials?.join(",") || "None",
+        constructionMaterials:
+          formData.constructionMaterials?.join(",") || "None",
         shopStatus: formData.shopStatus || "None",
         visitingCardFileName: formData.visitingCard?.name || undefined,
       };
@@ -254,6 +290,8 @@ const VisitorManagement: React.FC<Props> = ({
         pincode: "",
         whatsappNumber: "",
         constructionMaterials: [],
+        otherMaterialType: "",
+        otherVisitorType: "", // <-- Add this
       });
       setFormStep(1);
       setShowUploadProgress(false);
@@ -318,23 +356,25 @@ const VisitorManagement: React.FC<Props> = ({
             { value: "mixture_machine", label: "Mixture Machine" },
             { value: "construction_material", label: "Construction Material" },
             { value: "cement_steel_store", label: "Cement & Steel Store" },
-            { value: "local_supplier", label: "Local Supplier" },
+            { value: "borewell", label: "Borewell" },
+
             { value: "marbal_tile_store", label: "Marble & Tile Store" },
             { value: "concrete_product", label: "Concrete Product" },
-            { value: "other", label: "Other" },
+            { value: "other", label: "Other Material Type" },
           ].map((type) => (
             <Col key={type.value} sm={6} className="mb-2">
-              <Form.Check
-                type="checkbox"
-                id={`visitor-type-${type.value}`}
-                label={type.label}
-                name="visitorType"
-                value={type.value}
-                checked={formData.visitorType.includes(
-                  type.value as VisitorType
-                )}
-                onChange={handleInputChange}
-              />
+              <Form.Group controlId={`visitor-type-${type.value}`}>
+                <Form.Check
+                  type="checkbox"
+                  label={type.label}
+                  name="visitorType"
+                  value={type.value}
+                  checked={formData.visitorType.includes(
+                    type.value as VisitorType
+                  )}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
             </Col>
           ))}
         </Row>
@@ -356,10 +396,14 @@ const VisitorManagement: React.FC<Props> = ({
             overlay={
               <Popover id="info-popover">
                 <Popover.Body>
-                If you have a visiting card, please upload its photo and include some details about it in the description field. If not, please fill in all the information manually.                </Popover.Body>
+                  If you have a visiting card, please upload its photo and
+                  include some details about it in the description field. If
+                  not, please fill in all the information manually.{" "}
+                </Popover.Body>
               </Popover>
             }
             rootClose
+            container={document.body}
           >
             <InfoCircle style={{ cursor: "pointer", marginLeft: "8px" }} />
           </OverlayTrigger>
@@ -372,12 +416,14 @@ const VisitorManagement: React.FC<Props> = ({
     const showConstructionMaterialOptions = formData.visitorType.includes(
       "construction_material"
     );
+    // const showOtherMaterialInput = formData.visitorType.includes("other");
+    const showOtherVendorInput = formData.visitorType.includes("other");
 
     if (formData.hasVisitingCard) {
       return (
         <>
           <Form.Group className="mb-3">
-            <Form.Label>Upload Visiting Card</Form.Label>
+            <Form.Label>Add Visiting Card/Photo</Form.Label>
             <Form.Control
               type="file"
               name="visitingCard"
@@ -390,7 +436,7 @@ const VisitorManagement: React.FC<Props> = ({
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Description</Form.Label>
+            <Form.Label>Description </Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
@@ -467,13 +513,13 @@ const VisitorManagement: React.FC<Props> = ({
           <Row className="mb-3">
             <Col md={6}>
               <Form.Group>
-                <Form.Label>Vendor Name</Form.Label>
+                <Form.Label>Vendor Company Name</Form.Label>
                 <Form.Control
                   type="text"
                   name="vendorName"
                   value={formData.vendorName || ""}
                   onChange={handleInputChange}
-                  required
+                  // required
                 />
               </Form.Group>
             </Col>
@@ -485,7 +531,7 @@ const VisitorManagement: React.FC<Props> = ({
                   name="ownerName"
                   value={formData.ownerName || ""}
                   onChange={handleInputChange}
-                  required
+                  // required
                 />
               </Form.Group>
             </Col>
@@ -500,6 +546,9 @@ const VisitorManagement: React.FC<Props> = ({
                   name="contact1"
                   value={formData.contact1 || ""}
                   onChange={handleInputChange}
+                  pattern="\d{10}"
+                  maxLength={10}
+                  inputMode="numeric"
                   required
                 />
                 <Form.Check
@@ -509,6 +558,7 @@ const VisitorManagement: React.FC<Props> = ({
                   checked={formData.whatsappNumber === formData.contact1}
                   onChange={() => handleWhatsappChange(formData.contact1 || "")}
                   disabled={!formData.contact1}
+                  required
                 />
               </Form.Group>
             </Col>
@@ -520,6 +570,9 @@ const VisitorManagement: React.FC<Props> = ({
                   name="contact2"
                   value={formData.contact2 || ""}
                   onChange={handleInputChange}
+                  pattern="\d{10}"
+                  maxLength={10}
+                  inputMode="numeric"
                 />
                 <Form.Check
                   type="radio"
@@ -532,6 +585,20 @@ const VisitorManagement: React.FC<Props> = ({
               </Form.Group>
             </Col>
           </Row>
+
+          {showOtherVendorInput && (
+            <Form.Group className="mb-3">
+              <Form.Label>Specify Other Vendor Type</Form.Label>
+              <Form.Control
+                type="text"
+                name="otherVisitorType"
+                value={formData.otherVisitorType || ""}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+          )}
+
           <Form.Group className="mb-3">
             <Form.Label>Pincode</Form.Label>
             <Form.Control
@@ -543,18 +610,18 @@ const VisitorManagement: React.FC<Props> = ({
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Address</Form.Label>
+            <Form.Label>Address (Optional)</Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
               name="address"
               value={formData.address || ""}
               onChange={handleInputChange}
-              required
+              // required
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Description</Form.Label>
+            <Form.Label>Description (Optional)</Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
@@ -626,7 +693,14 @@ const VisitorManagement: React.FC<Props> = ({
             <strong>Step 1: Vendor Info</strong>
           </li>
           <li className="list-group-item">
-            <strong>Vendor Type:</strong> {formData.visitorType.join(", ")}
+            <strong>Vendor Type:</strong>{" "}
+            {formData.visitorType
+              .map((type) =>
+                type === "other" && formData.otherVisitorType
+                  ? `Other (${formData.otherVisitorType})`
+                  : type.replace(/_/g, " ")
+              )
+              .join(", ")}
           </li>
           <li className="list-group-item">
             <strong>Has Visiting Card:</strong>{" "}
