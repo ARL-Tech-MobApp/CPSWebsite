@@ -10,13 +10,14 @@ export const getSurveyColumns = (
   setSelectedImage: (image: string | null) => void
 ): Column<Survey & { actions?: any }>[] => [
   {
-    key: "employeeId",
-    title: "Employee ID",
+    key:userProfile?.isAdmin==="false"? "id" : "employeeId",
+    title:userProfile?.isAdmin==="false"? "Serial No." : "Employee ID",
     sortable: true,
     render: (row) => {
+      const isTouched =
+        Array.isArray(touchedSurveyIds) && touchedSurveyIds.includes(row.id);
       const isNew =
-        moment().diff(moment(row.createdAt), "hours") <= 72 &&
-        !touchedSurveyIds.includes(row.id);
+        moment().diff(moment(row.createdAt), "hours") <= 72 && !isTouched;
 
       return (
         <div
@@ -27,7 +28,7 @@ export const getSurveyColumns = (
             gap: "6px",
           }}
         >
-          <span>{row.employeeId}</span>
+          <span>{row.id}</span>
           {userProfile?.isAdmin === "true" && isNew && (
             <span
               style={{
@@ -95,10 +96,8 @@ export const getSurveyColumns = (
         "No Image"
       );
     },
-  },    
+  },
   { key: "pincode", title: "Pincode" },
   { key: "address", title: "Address" },
   { key: "createdAt", title: "Created At" },
-  
 ];
-

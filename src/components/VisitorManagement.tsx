@@ -18,7 +18,6 @@ import { useAuthStore } from "../stores/useAuthStore";
 import axios from "axios";
 import { InfoCircle } from "react-bootstrap-icons";
 
-
 const UploadIcon = BsUpload as unknown as React.FC;
 const CheckIcon = BsCheckCircle as unknown as React.FC;
 const ArrowLeftIcon = BsArrowLeft as unknown as React.FC;
@@ -114,10 +113,20 @@ const VisitorManagement: React.FC<Props> = ({
         [name]: value as ShopStatus,
       }));
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+      // Add this block for pincode
+      if (name === "pincode") {
+        let onlyDigits = value.replace(/[^0-9]/g, "");
+        let formatted = onlyDigits.replace(/(\d{6})(?=\d)/g, "$1,");
+        setFormData((prev) => ({
+          ...prev,
+          pincode: formatted,
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      }
     }
   };
   // Handle selecting WhatsApp number
@@ -157,9 +166,17 @@ const VisitorManagement: React.FC<Props> = ({
           return "Description is required.";
         }
       }
-      if (!/^\d{6}$/.test(formData.pincode || ""))
-        return "Enter valid 6-digit pincode.";
-        if (!formData.pincode?.trim()) return "Pincode is required.";
+      if (!formData.pincode?.trim()) return "Pincode is required.";
+      const pincodes = formData.pincode
+        .split(",")
+        .map((p) => p.trim())
+        .filter(Boolean);
+      if (pincodes.length === 0) return "At least one pincode is required.";
+      for (const pin of pincodes) {
+        if (!/^\d{6}$/.test(pin)) {
+          return `Invalid pincode: ${pin}. Each pincode must be 6 digits.`;
+        }
+      }
 
       if (
         formData.visitorType.includes("construction_material") &&
@@ -205,7 +222,8 @@ const VisitorManagement: React.FC<Props> = ({
         whatsappNumber: formData?.whatsappNumber || "None",
         address: formData.address || "None",
         pincode: formData.pincode || "None",
-        constructionMaterials: formData.constructionMaterials?.join(",") || "None",
+        constructionMaterials:
+          formData.constructionMaterials?.join(",") || "None",
         shopStatus: formData.shopStatus || "None",
         visitingCardFileName: formData.visitingCard?.name || undefined,
       };
@@ -356,7 +374,10 @@ const VisitorManagement: React.FC<Props> = ({
             overlay={
               <Popover id="info-popover">
                 <Popover.Body>
-                If you have a visiting card, please upload its photo and include some details about it in the description field. If not, please fill in all the information manually.                </Popover.Body>
+                  If you have a visiting card, please upload its photo and
+                  include some details about it in the description field. If
+                  not, please fill in all the information manually.{" "}
+                </Popover.Body>
               </Popover>
             }
             rootClose
