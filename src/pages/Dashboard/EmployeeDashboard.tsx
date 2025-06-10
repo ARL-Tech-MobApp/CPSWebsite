@@ -291,7 +291,7 @@ const EmployeeDashboard: React.FC = () => {
         onClose={() => setShowEmployeeDetailsModal({ status: false, details: {} })}
       />
       <ImagePreviewModal imageUrl={selectedImage} onClose={() => setSelectedImage(null)} />
-    </Layout>
+    </Layout> 
   );
 };
 
