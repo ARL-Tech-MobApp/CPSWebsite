@@ -8,7 +8,7 @@ import {
   OverlayTrigger,
   Popover,
 } from "react-bootstrap";
-import { BsArrowLeft } from "react-icons/bs";
+import { BsArrowLeft, BsUpload,BsCheckCircle } from "react-icons/bs";
 import { useSurveyStore } from "../stores/surveyStore";
 import { useAuthStore } from "../stores/useAuthStore";
 import axios from "axios";
@@ -182,7 +182,7 @@ const VisitorManagement: React.FC<Props> = ({
         (!formData.otherVisitorType || !formData.otherVisitorType.trim())
       ) {
         return "Please specify the 'Other' vendor type.";
-
+      }
       if (!formData.pincode?.trim()) return "Pincode is required.";
       const pincodes = formData.pincode
         .split(",")
@@ -195,6 +195,7 @@ const VisitorManagement: React.FC<Props> = ({
         }
 
       }
+      
 
       if (
         formData.visitorType.includes("construction_material") &&

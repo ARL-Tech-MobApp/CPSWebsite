@@ -5,7 +5,7 @@ import moment from "moment";
 
 export const getSurveyColumns = (
   userProfile: any,
-  touchedSurveyIds: string[],
+  touchedSurveyIds: string[]  = [],
   setShowEmployeeDetailsModal: (details: any) => void,
   setSelectedImage: (image: string | null) => void
 ): Column<Survey & { actions?: any }>[] => [

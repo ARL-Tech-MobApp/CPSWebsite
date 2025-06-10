@@ -47,13 +47,18 @@ const TabContentRenderer: React.FC<TabContentRendererProps> = ({
     {config.tableConfig && (
       <config.component
         columns={config.tableConfig.columns(
-          handlers.handleView,
-          tabTarget === "#nav-home" ? handlers.handleEdit : handlers.handleEditVisitor,
-          tabTarget === "#nav-home" ? handlers.deleteEmployee : handlers.deleteSurvey,
-          ...(tabTarget === "#nav-reports" 
-            ? [handlers.userProfile, handlers.touchedSurveyIds, 
-               handlers.setShowEmployeeDetailsModal, handlers.setSelectedImage]
-            : [])
+          ...(tabTarget === "#nav-reports"
+            ? [
+                handlers.userProfile,
+                handlers.touchedSurveyIds,
+                handlers.setShowEmployeeDetailsModal,
+                handlers.setSelectedImage,
+              ]
+            : [
+                handlers.handleView,
+                tabTarget === "#nav-home" ? handlers.handleEdit : handlers.handleEditVisitor,
+                tabTarget === "#nav-home" ? handlers.deleteEmployee : handlers.deleteSurvey,
+              ])
         )}
         data={data}
         rowsPerPage={5}

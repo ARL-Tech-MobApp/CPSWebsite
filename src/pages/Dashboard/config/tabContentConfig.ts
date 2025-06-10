@@ -11,7 +11,7 @@ import ApplyLeave from "../ApplyLeave";
 import HolidayCalendar from "../HolidayCalendar";
 import HandBook from "../HandBook";
 import Task from "../Task";
-
+import SalarySlip from "../SalarySlip";
 
 export type TabContentConfig = {
     component: React.ComponentType<any>;
@@ -74,4 +74,8 @@ export const tabContentMap: Record<string, TabContentConfig> = {
   "#nav-tasks": {
     component:Task,
   },
+  "#nav-salaries": {
+    component:SalarySlip,
+  },
+  
 };

@@ -291,7 +291,7 @@ const EmployeeDashboard: React.FC = () => {
         onClose={() => setShowEmployeeDetailsModal({ status: false, details: {} })}
       />
       <ImagePreviewModal imageUrl={selectedImage} onClose={() => setSelectedImage(null)} />
-    </Layout>
+    </Layout> 
   );
 };
 
@@ -300,6 +300,8 @@ const getMenuIcon = (target: string) => {
   if (target.includes("report")) return <FileTextOutlined />;
   if (target.includes("worksheet")) return <CalendarOutlined />;
   if (target.includes("expense")) return <DollarOutlined />;
+  if (target.includes("attance")) return <BellOutlined />;
+  
   return <UserOutlined />;
 };
 
