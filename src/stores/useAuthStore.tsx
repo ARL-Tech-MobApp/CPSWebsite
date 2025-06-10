@@ -117,6 +117,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   fetchUserProfile: async () => {
     const { accessToken } = get();
     if (!accessToken) return;
+    console.log("Fetching user profile with token:", accessToken);
 
     set({ profileLoading: true, error: null });
 
