@@ -56,9 +56,9 @@ const TabContentRenderer: React.FC<TabContentRendererProps> = ({
             : [])
         )}
         data={data}
-        rowsPerPage={10}
+        rowsPerPage={5}
         heading={config.tableConfig.heading}
-        searchKeys={tabTarget === "#nav-home"?["fullName", "phoneNumber"]:["vendorName", "employeeId", "whatsappNumber","pincode"]}
+        searchKeys={tabTarget === "#nav-home"?["fullName", "phoneNumber","id","position"]:["vendorName", "employeeId", "whatsappNumber","pincode"]}
         onView={handlers.handleView}
         onEdit={tabTarget === "#nav-home" ? handlers.handleEdit : handlers.handleEditVisitor}
         onDelete={tabTarget === "#nav-home" ? handlers.deleteEmployee : handlers.deleteSurvey}

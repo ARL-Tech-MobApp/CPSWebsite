@@ -336,10 +336,10 @@ const VisitorManagement: React.FC<Props> = ({
             { value: "mixture_machine", label: "Mixture Machine" },
             { value: "construction_material", label: "Construction Material" },
             { value: "cement_steel_store", label: "Cement & Steel Store" },
-            { value: "local_supplier", label: "Local Supplier" },
+            { value: "local_supplier", label: "Borewell" },
             { value: "marbal_tile_store", label: "Marble & Tile Store" },
             { value: "concrete_product", label: "Concrete Product" },
-            { value: "other", label: "Other" },
+            { value: "other", label: "Other Material Type" },
           ].map((type) => (
             <Col key={type.value} sm={6} className="mb-2">
               <Form.Check
@@ -398,7 +398,7 @@ const VisitorManagement: React.FC<Props> = ({
       return (
         <>
           <Form.Group className="mb-3">
-            <Form.Label>Upload Visiting Card</Form.Label>
+            <Form.Label>Add Visiting Card/Photo</Form.Label>
             <Form.Control
               type="file"
               name="visitingCard"
@@ -488,7 +488,7 @@ const VisitorManagement: React.FC<Props> = ({
           <Row className="mb-3">
             <Col md={6}>
               <Form.Group>
-                <Form.Label>Vendor Name</Form.Label>
+                <Form.Label>Vendor Company Name</Form.Label>
                 <Form.Control
                   type="text"
                   name="vendorName"
@@ -521,6 +521,9 @@ const VisitorManagement: React.FC<Props> = ({
                   name="contact1"
                   value={formData.contact1 || ""}
                   onChange={handleInputChange}
+                  pattern="\d{10}"
+                  maxLength={10}
+                  inputMode="numeric"
                   required
                 />
                 <Form.Check
@@ -541,6 +544,9 @@ const VisitorManagement: React.FC<Props> = ({
                   name="contact2"
                   value={formData.contact2 || ""}
                   onChange={handleInputChange}
+                  pattern="\d{10}"
+                  maxLength={10}
+                  inputMode="numeric"
                 />
                 <Form.Check
                   type="radio"
@@ -571,7 +577,7 @@ const VisitorManagement: React.FC<Props> = ({
               name="address"
               value={formData.address || ""}
               onChange={handleInputChange}
-              required
+              // required
             />
           </Form.Group>
           <Form.Group className="mb-3">
