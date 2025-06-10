@@ -14,9 +14,8 @@ export const getSurveyColumns = (
     title: "Employee ID",
     sortable: true,
     render: (row) => {
-      const isNew =
-        moment().diff(moment(row.createdAt), "hours") <= 72 &&
-        !touchedSurveyIds.includes(row.id);
+      const isTouched = Array.isArray(touchedSurveyIds) && touchedSurveyIds.includes(row.id);
+      const isNew = moment().diff(moment(row.createdAt), "hours") <= 72 && !isTouched;
 
       return (
         <div
