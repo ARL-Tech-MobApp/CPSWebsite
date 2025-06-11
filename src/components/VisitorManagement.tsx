@@ -43,9 +43,17 @@ interface VisitorFormData {
   description?: string;
   vendorName?: string;
   ownerName?: string;
+  driverContact1?: string;
+  driverContact2?: string;
+  driverName1?: string;
+  driverName2?: string;
+  driver2Contact1?: string;
+  driver2Contact2?: string;
   contact1?: string;
   contact2?: string;
   whatsappNumber?: string;
+  whatsappNumberDriver1?: string;
+  whatsappNumberDriver2?: string;
   address?: string;
   pincode?: string;
   constructionMaterials?: ConstructionMaterial[];
@@ -137,6 +145,20 @@ const VisitorManagement: React.FC<Props> = ({
     }));
   };
 
+  const handleWhatsappDriver1Change = (number: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      whatsappNumberDriver1: number,
+    }));
+  };
+
+  const handleWhatsappDriver2Change = (number: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      whatsappNumberDriver2: number,
+    }));
+  };
+
   const validateForm = (): string | null => {
     if (formStep === 1) {
       if (formData.visitorType.length === 0) {
@@ -152,6 +174,8 @@ const VisitorManagement: React.FC<Props> = ({
       if (!formData.hasVisitingCard) {
         if (!formData.vendorName?.trim()) return "Vendor name is required.";
         if (!formData.ownerName?.trim()) return "Owner name is required.";
+        if (!formData.driverName1?.trim()) return "Driver name 1 is required.";
+        if (!formData.driverName2?.trim()) return "Driver name 2 is required.";
         if (!formData.contact1?.trim()) return "Primary contact is required.";
         if (!/^\d{10}$/.test(formData.contact1))
           return "Enter valid 10-digit contact.";
@@ -217,9 +241,17 @@ const VisitorManagement: React.FC<Props> = ({
         description: formData.description || "None",
         vendorName: formData.vendorName || "None",
         ownerName: formData.ownerName || "None",
+        driverContact1: formData.driverContact1 || "None",
+        driverContact2: formData.driverContact2 || "None",
+        driverName1: formData.driverName1 || "None",
+        driverName2: formData.driverName2 || "None",
+        driver2Contact1: formData.driver2Contact1 || "None",
+        driver2Contact2: formData.driver2Contact2 || "None",
         contact1: formData.contact1 || "None",
         contact2: formData.contact2 || "None",
         whatsappNumber: formData?.whatsappNumber || "None",
+        whatsappNumberDriver1: formData?.whatsappNumberDriver1 || "None",
+        whatsappNumberDriver2: formData?.whatsappNumberDriver2 || "None",
         address: formData.address || "None",
         pincode: formData.pincode || "None",
         constructionMaterials:
@@ -266,11 +298,19 @@ const VisitorManagement: React.FC<Props> = ({
         description: "",
         vendorName: "",
         ownerName: "",
+        driverName1: "",
+        driverContact1: "",
+        driverContact2: "",
+        driverName2: "",
+        driver2Contact1: "",
+        driver2Contact2: "",
         contact1: "",
         contact2: "",
         address: "",
         pincode: "",
         whatsappNumber: "",
+        whatsappNumberDriver1: "",
+        whatsappNumberDriver2: "",
         constructionMaterials: [],
       });
       setFormStep(1);
@@ -559,6 +599,163 @@ const VisitorManagement: React.FC<Props> = ({
               </Form.Group>
             </Col>
           </Row>
+          {!formData.visitorType.includes("other") && (
+            <>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Driver Name 1</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="driverName1"
+                    value={formData.driverName1 || ""}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Row className="mb-3">
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label>Driver 1 Contact Number 1</Form.Label>
+                    <Form.Control
+                      type="tel"
+                      name="driverContact1"
+                      value={formData.driverContact1 || ""}
+                      onChange={handleInputChange}
+                      pattern="\d{10}"
+                      maxLength={10}
+                      inputMode="numeric"
+                      required
+                    />
+                    <Form.Check
+                      type="radio"
+                      name="whatsappNumberDriver1" // same name for both radios
+                      label="Set as WhatsApp Number"
+                      checked={
+                        formData.whatsappNumberDriver1 ===
+                        formData.driverContact1
+                      }
+                      onChange={() =>
+                        handleWhatsappDriver1Change(
+                          formData.driverContact1 || ""
+                        )
+                      }
+                      disabled={!formData.driverContact1}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label>
+                      Driver 1 Contact Number 2 (Optional)
+                    </Form.Label>
+                    <Form.Control
+                      type="tel"
+                      name="driverContact2"
+                      value={formData.driverContact2 || ""}
+                      onChange={handleInputChange}
+                      pattern="\d{10}"
+                      maxLength={10}
+                      inputMode="numeric"
+                    />
+                    <Form.Check
+                      type="radio"
+                      name="whatsappNumberDriver1" // same name for both radios
+                      label="Set as WhatsApp Number"
+                      checked={
+                        formData.whatsappNumberDriver1 ===
+                        formData.driverContact2
+                      }
+                      onChange={() =>
+                        handleWhatsappDriver1Change(
+                          formData.driverContact2 || ""
+                        )
+                      }
+                      disabled={!formData.driverContact2}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Driver Name 2</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="driverName2"
+                    value={formData.driverName2 || ""}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Row className="mb-3">
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label>Driver 2 Contact Number 1</Form.Label>
+                    <Form.Control
+                      type="tel"
+                      name="driver2Contact1"
+                      value={formData.driver2Contact1 || ""}
+                      onChange={handleInputChange}
+                      pattern="\d{10}"
+                      maxLength={10}
+                      inputMode="numeric"
+                      required
+                    />
+                    <Form.Check
+                      type="radio"
+                      name="whatsappNumberDriver2"
+                      label="Set as WhatsApp Number"
+                      checked={
+                        formData.whatsappNumberDriver2 ===
+                        formData.driver2Contact1
+                      }
+                      onChange={() =>
+                        handleWhatsappDriver2Change(
+                          formData.driver2Contact1 || ""
+                        )
+                      }
+                      disabled={!formData.driver2Contact1}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group>
+                    <Form.Label>
+                      Driver 2 Contact Number 2 (Optional)
+                    </Form.Label>
+                    <Form.Control
+                      type="tel"
+                      name="driver2Contact2"
+                      value={formData.driver2Contact2 || ""}
+                      onChange={handleInputChange}
+                      pattern="\d{10}"
+                      maxLength={10}
+                      inputMode="numeric"
+                    />
+                    <Form.Check
+                      type="radio"
+                      name="whatsappNumberDriver2"
+                      label="Set as WhatsApp Number"
+                      checked={
+                        formData.whatsappNumberDriver2 ===
+                        formData.driver2Contact2
+                      }
+                      onChange={() =>
+                        handleWhatsappDriver2Change(
+                          formData.driver2Contact2 || ""
+                        )
+                      }
+                      disabled={!formData.driver2Contact2}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+            </>
+          )}
           <Form.Group className="mb-3">
             <Form.Label>Pincode</Form.Label>
             <Form.Control
@@ -737,7 +934,11 @@ const VisitorManagement: React.FC<Props> = ({
 
   return (
     <>
-      <Modal show={showModal} onHide={resetForm}>
+      <Modal
+        show={showModal}
+        onHide={resetForm}
+        dialogClassName="custom-modal-width"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Vendor Survey</Modal.Title>
         </Modal.Header>
