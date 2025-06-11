@@ -4,6 +4,7 @@ import { ProfileSectionProps } from "../types/employee";
 const ProfileSection: React.FC<ProfileSectionProps> = ({ profileFields }) => {
   const [expanded, setExpanded] = useState(false);
   const visibleFields = expanded ? profileFields : profileFields.slice(0, 2);
+  console.log("ProfileSection Props:", visibleFields);
 
   return (
     <div className="card shadow shadow-sm rounded-4 p-4">
