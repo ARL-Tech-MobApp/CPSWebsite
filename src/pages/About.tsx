@@ -20,12 +20,13 @@ const AboutPage = () => {
                     {[
                         { name: "Sibasis Sahu", role: "Managing Director", img: "/team/SibasisSir.png" },
                         { name: "Binoy Acharya", role: "Managing Director", img: "/team/BinoyAcharyaSir.png" },
-                        { name: "Biren Pradhan", role: "General Manager", img: "/team/BirenSir.png" },
+                        // { name: "Biren Pradhan", role: "General Manager", img: "/team/BirenSir.png" },
                         // { name: "Mira Verma", role: "UX Researcher", img: "/testimonial/profile1.jpg" },
                         // { name: "Rahul Jain", role: "DevOps Engineer", img: "/testimonial/profile2.jpg" },
                         // { name: "Sneha Das", role: "Frontend Developer", img: "/testimonial/profile2.jpg" },
                     ].map((member, idx) => (
-                        <div className="col-sm-12 col-md-6 col-lg-4" key={idx} data-aos="zoom-in" data-aos-delay={idx * 100}>
+                        // <div className="col-sm-12 col-md-6 col-lg-4" key={idx} data-aos="zoom-in" data-aos-delay={idx * 100}>
+                        <div className="col-sm-12 col-md-6" key={idx} data-aos="zoom-in" data-aos-delay={idx * 100}>
                             <div className="card border-0 shadow text-center h-100">
                                 <img
                                     src={member.img}

@@ -22,7 +22,7 @@ const Product = () => {
               <img
                 src="/download/1.png"
                 alt="Bhawan Care App"
-                className="img-fluid shadow rounded-4 floating"
+                className="img-fluid floating"
               />
             </div>
             <div className="col-lg-6">
@@ -40,10 +40,10 @@ const Product = () => {
                   <li> Monthly Reports & Community Dashboard</li>
                 </ul>
                 <div className="mt-3 d-flex flex-wrap align-items-center gap-3">
-                  <a href="https://play.google.com/" target="_blank" rel="noreferrer">
+                  <a href="/coming-soon" target="_blank" rel="noreferrer">
                     <img src="/download/playstore.png" alt="Google Play" className="store-btn" />
                   </a>
-                  <a href="https://www.apple.com/in/app-store/" target="_blank" rel="noreferrer">
+                  <a href="/coming-soon" target="_blank" rel="noreferrer">
                     <img src="/download/apple-logo.png" alt="App Store" className="store-btn" />
                   </a>
                   <a
@@ -65,12 +65,13 @@ const Product = () => {
               <img
                 src="/download/2.png"
                 alt="Excavator App"
-                className="img-fluid shadow rounded-4 floating"
+                className="img-fluid floating"
+                // className="img-fluid shadow rounded-4 floating"
               />
             </div>
             <div className="col-lg-6">
               <div className="product-card glass-card border-0 shadow p-4 rounded-4 h-100">
-                <h2 className="fw-bold text-primary">Excavator App</h2>
+                <h2 className="fw-bold text-primary">Aaa-O App</h2>
                 <p className="text-muted">
                   The Excavator App revolutionizes the equipment rental market by offering a smart and intuitive platform to book excavators.
                   Whether you're a contractor, builder, or an individual, get access to the right tools, on demand.
@@ -83,14 +84,14 @@ const Product = () => {
                   <li> 24/7 Customer Support & Assistance</li>
                 </ul>
                 <div className="mt-3 d-flex flex-wrap align-items-center gap-3">
-                  <a href="https://play.google.com/" target="_blank" rel="noreferrer">
+                  <a href="/coming-soon" target="_blank" rel="noreferrer">
                     <img src="/download/playstore.png" alt="Google Play" className="store-btn" />
                   </a>
-                  <a href="https://www.apple.com/in/app-store/" target="_blank" rel="noreferrer">
+                  <a href="/coming-soon" target="_blank" rel="noreferrer">
                     <img src="/download/apple-logo.png" alt="App Store" className="store-btn" />
                   </a>
                   <a
-                    href="https://excavatorapp.com/"
+                    href="https://aaa-o.com/"
                     target="_blank"
                     rel="noreferrer"
                     className="btn btn-outline-primary"

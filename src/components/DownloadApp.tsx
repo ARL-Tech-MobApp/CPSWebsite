@@ -45,7 +45,7 @@ const Download = () => {
                 <div className="row align-items-center flex-lg-row-reverse g-5">
                     <div className="col-lg-6">
                         <div className="app-box shadow p-5">
-                            <h2 className="fw-bold mb-3">Try Our Excavator App</h2>
+                            <h2 className="fw-bold mb-3">Try Our Aaa-O App</h2>
                             <p className="text-muted mb-4">
                                 Complement your experience with our sidekick app. Designed for
                                 remote access, quick tracking, and powerful on-the-go tools.

@@ -36,13 +36,13 @@ const Footer: React.FC = () => {
               </p>
             </div>
             <div className="social-links d-flex mt-4 gap-3">
-              <a href="https://x.com/bhawancare">
+              {/* <a href="https://x.com/bhawancare">
                 <i className="bi bi-twitter-x text-white"></i>
-              </a>
-              <a href="https://www.facebook.com/profile.php?id=61566381572393&sk=about">
+              </a> */}
+              <a href="https://www.facebook.com/profile.php?id=61576064806696">
                 <i className="bi bi-facebook text-white"></i>
               </a>
-              <a href="https://www.instagram.com/bhawancare/">
+              <a href="https://www.instagram.com/cps_pvt_ltd/">
                 <i className="bi bi-instagram text-white"></i>
               </a>
               <a href="https://www.linkedin.com/company/104807752/admin/page-posts/published/">
@@ -65,10 +65,10 @@ const Footer: React.FC = () => {
                 <Link to="/product">Products</Link>
               </li>
               <li>
-                <Link to="/contact">Support</Link>
+                <Link to="/contact">Contact</Link>
               </li>
               <li>
-                <Link to="/terms">Legal</Link>
+                <Link to="/terms">Privacy</Link>
               </li>
             </ul>
           </Col>
@@ -78,28 +78,16 @@ const Footer: React.FC = () => {
             <h4>Download Links</h4>
             <ul className="list-unstyled">
               <li>
-                <a
-                  href="https://play.google.com/store/apps/details?id=com.bhawancare.bhawancare"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  BhawanCare PlayStore
-                </a>
+                <Link to="/coming-soon">BhawanCare PlayStore</Link>
               </li>
               <li>
-                <Link to="/coming-soon">Excavator PlayStore</Link>
+                <Link to="/coming-soon">Aaa-O PlayStore</Link>
               </li>
               <li>
-                <a
-                  href="https://apps.apple.com/app/idYOUR_APPLE_ID"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  BhawanCare AppStore
-                </a>
+                <Link to="/coming-soon">BhawanCare AppStore</Link>
               </li>
               <li>
-                <Link to="/coming-soon">Excavator AppStore</Link>
+                <Link to="/coming-soon">Aaa-O AppStore</Link>
               </li>
             </ul>
           </Col>
@@ -132,12 +120,12 @@ const Footer: React.FC = () => {
                 Visit BhawanCare Website
               </a>
               <a
-                href="https://excavatorv1.netlify.app/"
+                href="https://aaa-o.com/"
                 target="_blank"
                 rel="noreferrer"
                 className="btn btn-outline-primary btn-sm"
               >
-                Visit Excavator Website
+                Visit Aaa-O Website
               </a>
             </div>
           </Col>
@@ -146,13 +134,20 @@ const Footer: React.FC = () => {
 
       <Container className="text-center mt-4">
         <p className="copyright">
-          &copy; {new Date().getFullYear()}{" "}
+         <a
+                href="/terms"
+                target="_blank"
+                rel="noreferrer"
+              >Terms & Conditions  </a>
+            | Designed by CPS Team
+        </p>
+        <p className="credits">
+           &copy; {new Date().getFullYear()}{" "}
           <strong className="site">
             Chaturdha Projects & Services Pvt Ltd
           </strong>
-          . All rights reserved.
-        </p>
-        <p className="credits">Designed by CPS Team</p>
+          . All rights reserved. </p>
+
       </Container>
     </footer>
   );
