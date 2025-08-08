@@ -40,7 +40,7 @@ const SignIn: React.FC = () => {
     <motion.div
       initial="hidden"
       animate="visible"
-      variants={containerVariants}
+      // variants={containerVariants}
       style={{
         minHeight: "100vh",
         display: "flex",

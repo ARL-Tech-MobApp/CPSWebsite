@@ -9,8 +9,8 @@ const Header: React.FC = () => {
 
   return (
     <header className="sticky-top bg-white shadow-sm">
-      <Navbar expand="lg" className="py-3">
-        <Container fluid className="px-3">
+      <Navbar expand="lg" className="py-1">
+        <Container fluid className="px-1">
           {" "}
           {/* Use fluid and controlled padding */}
           <div className="d-flex w-100 justify-content-between align-items-center flex-nowrap">
@@ -22,8 +22,8 @@ const Header: React.FC = () => {
               <img
                 src="/download/logo.png"
                 alt="Chaturdha Logo"
-                height={60}
-                width={60}
+                height={90}
+                width={90}
                 className="d-inline-block"
                 style={{ objectFit: "contain" }}
               />
@@ -60,7 +60,9 @@ const Header: React.FC = () => {
                 Contact
               </Nav.Link>
               <Nav.Link as={Link} to="/employee-portals">
-                Employee LogIn
+               <Button>
+                  LOGIN
+                </Button>
               </Nav.Link>
               
               {accessToken && (

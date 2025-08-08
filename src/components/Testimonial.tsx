@@ -21,7 +21,7 @@ const Testimonial = () => {
                                             <img src="/testimonial/profile2.jpg" alt="Client 1" className="testimonial-img" />
                                         </div>
                                         <div className="star-box">★★★★★</div>
-                                        <h5 className="fw-bold mt-3">Samantha R.</h5>
+                                        <h5 className="fw-bold mt-3">Sarojini Dash</h5>
                                         <p className="text-muted fst-italic px-3">
                                             “An absolutely magical experience. Beautiful design, seamless interface, and truly outstanding customer support.”
                                         </p>
@@ -36,7 +36,7 @@ const Testimonial = () => {
                                             <img src="/testimonial/profile1.jpg" alt="Client 2" className="testimonial-img" />
                                         </div>
                                         <div className="star-box">★★★★★</div>
-                                        <h5 className="fw-bold mt-3">Michael T.</h5>
+                                        <h5 className="fw-bold mt-3">Aviram Mohanty</h5>
                                         <p className="text-muted fst-italic px-3">
                                             “Their service transformed our work. Everything feels intuitive, smooth, fast, and highly reliable.”
                                         </p>
@@ -51,7 +51,7 @@ const Testimonial = () => {
                                             <img src="/testimonial/profile3.jpg" alt="Client 3" className="testimonial-img" />
                                         </div>
                                         <div className="star-box">★★★★★</div>
-                                        <h5 className="fw-bold mt-3">Ava K.</h5>
+                                        <h5 className="fw-bold mt-3">Suraj Panda</h5>
                                         <p className="text-muted fst-italic px-3">
                                             “Exceeded expectations in every way — from thoughtful design to smooth and flawless deployment.”
                                         </p>
